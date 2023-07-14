@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+
+<body>
+
+<!-- have a button POST a click via AJAX -->
+<button hx-post="/clicked" hx-swap="outerHTML">
+    Click Me
+</button>
+
+
+
+<!-- have a button POST a click via AJAX -->
+<h1>
+    Events
+</h1>
+<table style="border: 1px" hx-get="/events" hx-target="#events-table-body" hx-trigger="load">
+    <thead>
+        <td>Date</td>
+        <td>Time</td>
+    </thead>
+    <tbody id="events-table-body">
+        <tr>
+            <td>Date 1</td>
+            <td>Time 1</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+</body>
+</html>
