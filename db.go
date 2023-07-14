@@ -39,6 +39,19 @@ func (d *Database) Init() {
 		log.WithError(err).Panicf("could not init database: %s", res)
 	}
 
+	// Create attendees table
+	create = `
+	create table if not exists attendees (
+	name     integer,
+	event_id integer
+		constraint attendees_events_id_fk
+			references events
+	);`
+	res, err = d.DB.Exec(create)
+	if err != nil {
+		log.WithError(err).Panicf("could not init database: %s", res)
+	}
+
 	// Add example
 	res, err = d.DB.Exec("INSERT INTO events VALUES(NULL,?,?);", time.Now(), "Beers")
 	res, err = d.DB.Exec("INSERT INTO events VALUES(NULL,?,?);", time.Now(), "Pool")
