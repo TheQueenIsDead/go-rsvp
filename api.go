@@ -16,6 +16,10 @@ func InitAPI() {
 // getClickedHandler returns hello world example text in order to fulfill
 // the example clicked endpoint from the HTMX tutorial
 func getClickedHandler(res http.ResponseWriter, req *http.Request) {
+
+	log.Debug(req)
+	log.Debug(req.URL.Query())
+
 	res.WriteHeader(http.StatusOK)
 	_, _ = res.Write([]byte("Hello world!"))
 }

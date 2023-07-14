@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+
+
+
+<!-- have a button POST a click via AJAX -->
+<h1>
+    Event Title
+</h1>
+
+
+<div>
+    <div>Event Name</div>
+    <div>Event Location</div>
+</div>
+
+<br>
+
+<!--<form hx-post="/attend">-->
+<form hx-post="/clicked"
+      hx-headers='{"X-CSRFToken": "example token"}'
+      hx-target="#like-example"
+      hx-include="[name='id']"
+      hx-swap="outerHTML">
+    <fieldset></fieldset>
+    <legend>Personalia:</legend>
+    <label for="fname">First name:</label>
+    <input type="text" id="fname" name="fname"><br><br>
+    <label for="lname">Last name:</label>
+    <input type="text" id="lname" name="lname"><br><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email"><br><br>
+    <label name="id" id="like-example" for="birthday">Birthday:</label>
+    <input type="date" id="birthday" name="birthday"><br><br>
+    <input type="submit" value="Submit">
+</form>
+
+
+</body>
+</html>
+
+<script>
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        console.log("Serving???")
+        let params = new URLSearchParams(window.location.search);
+        console.log(params)
+        params.append('ping','pong')
+        console.log(params)
+
+
+        for (const [key, value] of Object.entries(params)) {
+            evt.detail.parameters[key] = value
+        }
+
+        evt.detail.parameters += params
+
+        // evt.detail.parameters['auth_token'] = getAuthToken(); // add a new parameter into the request
+        // evt.detail.headers['Authentication-Token'] = getAuthToken(); // add a new header into the request
+    });
+</script>

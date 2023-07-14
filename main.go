@@ -12,12 +12,16 @@ var (
 func main() {
 
 	log.StandardLogger().SetReportCaller(true)
-	log.SetLevel(log.InfoLevel)
+	log.SetLevel(log.DebugLevel)
 
 	// Setup file server
 	log.Info("initialising file server")
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 	log.Info("fileserver initialised")
+	//log.Info("initialising file server")
+	//fs := http.FileServer(HTMLDir{"static/"})
+	//http.Handle("/", http.StripPrefix("/", fs))
+	//log.Info("fileserver initialised")
 
 	// Setup DB
 	RsvpDatabase = NewDatabase()
