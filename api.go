@@ -16,7 +16,7 @@ func InitAPI(e *echo.Echo) {
 
 	e.GET("/events", getEventsHandler)
 	e.GET("/events/:id", getEventById)
-	e.PUT("/events/attend", createEventAttendance)
+	e.POST("/events/:id/attend", createEventAttendance)
 
 }
 
@@ -112,19 +112,19 @@ func getEventById(c echo.Context) error {
 }
 
 // createEventAttendance allows us to register people for an event
-// Ex.  curl -v -X PUT http://localhost:3000/events/attend -d 'name=billynomates&event_id=40'
+// Ex. curl -v -X POST http://localhost:3000/events/40/attend -d 'name=billynomates2'
 func createEventAttendance(c echo.Context) error {
 
 	name := c.FormValue("name")
-	eventId := c.FormValue("event_id")
+	id := c.Param("id")
 
 	create := `insert into attendees (name, event_id) values (?, ?);`
 
-	_, err := RsvpDatabase.DB.Exec(create, name, eventId)
+	_, err := RsvpDatabase.DB.Exec(create, name, id)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "could not create attendee")
 	}
 
-	return c.String(200, fmt.Sprintf("All good for %s %s", name, eventId))
+	return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
 
 }
