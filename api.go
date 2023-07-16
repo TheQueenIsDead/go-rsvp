@@ -16,6 +16,7 @@ func InitAPI(e *echo.Echo) {
 
 	e.GET("/events", getEventsHandler)
 	e.GET("/events/:id", getEventById)
+	e.PUT("/events/attend", createEventAttendance)
 
 }
 
@@ -107,5 +108,23 @@ func getEventById(c echo.Context) error {
 	log.Warn("Hello am in event by id")
 
 	return c.Render(200, "templates/event.html", e)
+
+}
+
+// createEventAttendance allows us to register people for an event
+// Ex.  curl -v -X PUT http://localhost:3000/events/attend -d 'name=billynomates&event_id=40'
+func createEventAttendance(c echo.Context) error {
+
+	name := c.FormValue("name")
+	eventId := c.FormValue("event_id")
+
+	create := `insert into attendees (name, event_id) values (?, ?);`
+
+	_, err := RsvpDatabase.DB.Exec(create, name, eventId)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "could not create attendee")
+	}
+
+	return c.String(200, fmt.Sprintf("All good for %s %s", name, eventId))
 
 }
