@@ -23,13 +23,25 @@ func InitAPI(e *echo.Echo) {
 // the example clicked endpoint from the HTMX tutorial
 func getClickedHandler(c echo.Context) error {
 
-	log.Debug(c)
-	log.Debug(c.Request().URL.Query())
+	result := []map[string]interface{}{
+		{
+			"time":        "exampletime",
+			"description": "exampleDescription",
+			"_links": map[string]string{
+				"self": "/events/demoId",
+			},
+		},
+		{
+			"time":        "exampletime2",
+			"description": "exampleDescription2",
+			"_links": map[string]string{
+				"self": "/events/demoId2",
+			},
+		},
+	}
 
-	c.Response().WriteHeader(http.StatusOK)
-	_, _ = c.Response().Write([]byte("Hello world!"))
+	return c.JSON(http.StatusOK, result)
 
-	return nil
 }
 
 // getEventsHandler returns all events in the database
@@ -53,15 +65,25 @@ func getEventsHandler(c echo.Context) error {
 		data = append(data, e)
 	}
 
-	var result string
+	//var result string
+	//for _, e := range data {
+	//	result += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", e.Time, e.Description)
+	//}
+	var result []map[string]interface{}
 	for _, e := range data {
-		result += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", e.Time, e.Description)
+		evt := map[string]interface{}{
+			"time":        e.Time,
+			"description": e.Description,
+			"_links": map[string]string{
+				"self": fmt.Sprintf("/events/%d", e.Id),
+			},
+		}
+		//result += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", e.Time, e.Description)
+		result = append(result, evt)
 	}
 
-	c.Response().WriteHeader(http.StatusOK)
-	_, _ = c.Response().Write([]byte(result))
+	return c.JSON(http.StatusOK, result)
 
-	return nil
 }
 
 // getEventsHandler returns an event by its ID
