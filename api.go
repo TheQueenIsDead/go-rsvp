@@ -1,8 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -13,6 +15,7 @@ func InitAPI(e *echo.Echo) {
 	e.GET("/clicked", getClickedHandler)
 
 	e.GET("/events", getEventsHandler)
+	e.GET("/event/:id", getEventById)
 
 }
 
@@ -59,4 +62,28 @@ func getEventsHandler(c echo.Context) error {
 	_, _ = c.Response().Write([]byte(result))
 
 	return nil
+}
+
+// getEventsHandler returns an event by its ID
+func getEventById(c echo.Context) error {
+
+	id := c.Param("id")
+
+	row := RsvpDatabase.DB.QueryRow("SELECT * FROM events WHERE id = ?", id)
+
+	var e Events
+	err := row.Scan(&e.Id, &e.Time, &e.Description)
+	if err != nil {
+
+		if err == sql.ErrNoRows {
+			return c.Render(http.StatusNotFound, "templates/404.html", nil)
+		}
+		log.WithError(err).Error("could not unmarshal events from database")
+		c.Response().WriteHeader(http.StatusInternalServerError)
+	}
+
+	log.Warn("Hello am in event by id")
+
+	return c.Render(200, "templates/event.html", e)
+
 }
