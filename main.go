@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 var (
@@ -11,16 +11,17 @@ var (
 
 func main() {
 
+	// Setup Logging
 	log.StandardLogger().SetReportCaller(true)
 	log.SetLevel(log.DebugLevel)
 
+	// Setup Webserver
+	e := echo.New()
+
 	// Setup file server
 	log.Info("initialising file server")
-	http.Handle("/", http.FileServer(http.Dir("./static")))
+	e.Static("/", "static/")
 	log.Info("fileserver initialised")
-	//log.Info("initialising file server")
-	//fs := http.FileServer(HTMLDir{"static/"})
-	//http.Handle("/", http.StripPrefix("/", fs))
 	//log.Info("fileserver initialised")
 
 	// Setup DB
@@ -29,12 +30,9 @@ func main() {
 
 	// Setup API
 	log.Info("initializing api")
-	InitAPI()
+	InitAPI(e)
 	log.Info("api initialised")
 
 	// Serve
-	err := http.ListenAndServe(":3000", nil)
-	if err != nil {
-		log.WithError(err).Panic("issue encountered serving http")
-	}
+	e.Logger.Fatal(e.Start(":3000"))
 }
