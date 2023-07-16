@@ -15,7 +15,7 @@ func InitAPI(e *echo.Echo) {
 	e.GET("/clicked", getClickedHandler)
 
 	e.GET("/events", getEventsHandler)
-	e.GET("/event/:id", getEventById)
+	e.GET("/events/:id", getEventById)
 
 }
 

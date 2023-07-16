@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+    <script src="https://unpkg.com/mustache@latest"></script>
     <link rel="stylesheet" href="styles.css">
 
 </head>
@@ -11,32 +13,27 @@
 
 <body>
 
-<!-- have a button POST a click via AJAX -->
-<button hx-post="/clicked" hx-swap="outerHTML">
-    Click Me
-</button>
 
-
-
-<!-- have a button POST a click via AJAX -->
 <h1>
     Events
 </h1>
-<table style="border: 1px" hx-get="/events" hx-target="#events-table-body" hx-trigger="load">
+
+<table hx-get="/events" hx-swap="innerHTML" hx-target="#events-table-body" mustache-template="event" hx-trigger="load" hx-ext="client-side-templates">
     <thead>
         <td>Date</td>
-        <td>Time</td>
+        <td>Description</td>
+        <td>Link</td>
     </thead>
     <tbody id="events-table-body">
-        <tr>
-            <td>Date 1</td>
-            <td>Time 1</td>
-        </tr>
+        <template id="event">
+            {{#.}}<tr>
+                <td> {{time}} </td>
+                <td> {{description}} </td>
+            <td> <button><a href="{{_links.self}}"> {{_links.self}} </a></button></td>
+            </tr>{{/.}}
+        </template>
     </tbody>
 </table>
-
-
-
 
 </body>
 </html>
