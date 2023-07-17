@@ -21,11 +21,13 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	output, err := mustache.RenderFileInLayout("templates/template.example.html", "templates/layout.index.html", nil)
 	//output, err := mustache.RenderFile(name, data)
 	if err != nil {
+		log.WithError(err).Error("could not render")
 		return err
 	}
 
 	_, err = w.Write([]byte(output))
 	if err != nil {
+		log.WithError(err).Error("could not write render")
 		return err
 	}
 
