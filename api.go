@@ -12,6 +12,7 @@ import (
 // InitAPI registers the application routes with the appropriate handlers,
 // passing in a datastore wrapper for the endpoints to utilise.
 func InitAPI(e *echo.Echo) {
+	e.GET("/demo", getDemo)
 	e.GET("/clicked", getClickedHandler)
 
 	e.GET("/events", getEventsHandler)
@@ -75,8 +76,21 @@ func getEventsHandler(c echo.Context) error {
 		evt := map[string]interface{}{
 			"time":        e.Time,
 			"description": e.Description,
-			"_links": map[string]string{
+			"_links": map[string]interface{}{
 				"self": fmt.Sprintf("/events/%d", e.Id),
+				"_templates": map[string]interface{}{
+					fmt.Sprintf("/events/%d", e.Id): map[string]interface{}{
+						"title":       "Attend",
+						"method":      "POST",
+						"contentType": "application/json",
+						"properties": []map[string]interface{}{
+							{
+								"name":     "name",
+								"required": true,
+							},
+						},
+					},
+				},
 			},
 		}
 		//result += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", e.Time, e.Description)
@@ -127,4 +141,16 @@ func createEventAttendance(c echo.Context) error {
 
 	return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
 
+}
+
+func getDemo(c echo.Context) error {
+
+	return c.Render(200, "", nil)
+
+	//content, err := mustache.RenderFileInLayout("templates/template.example.html", "templates/layout.index.html", nil)
+	//if err != nil {
+	//	log.Error(err)
+	//}
+	//c.Response().Header().Add("content-type", "text/html")
+	//return c.String(200, content)
 }

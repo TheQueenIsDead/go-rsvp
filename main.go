@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"html/template"
 	"io"
-	"net/http"
 )
 
 var (
@@ -19,7 +18,8 @@ type Template struct {
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 
-	output, err := mustache.RenderFile(name, data)
+	output, err := mustache.RenderFileInLayout("templates/template.example.html", "templates/layout.index.html", nil)
+	//output, err := mustache.RenderFile(name, data)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func main() {
 	//	return c.Render(http.StatusNotFound, "templates/404.html", nil)
 	//})
 
-	e.HTTPErrorHandler = customHTTPErrorHandler
+	//e.HTTPErrorHandler = customHTTPErrorHandler
 
 	// Setup DB
 	RsvpDatabase = NewDatabase()
@@ -66,23 +66,24 @@ func main() {
 	log.Info("api initialised")
 
 	// Serve
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(e.Start(":6969"))
 }
-func customHTTPErrorHandler(err error, c echo.Context) {
-	httpError, ok := err.(*echo.HTTPError)
-	if ok {
-		errorCode := httpError.Code
-		switch errorCode {
-		case http.StatusNotFound:
-			// TODO: Smooth this over a bit
-			err := c.Redirect(http.StatusPermanentRedirect, "/404.html")
-			if err != nil {
-				return
-			}
-		default:
-			// TODO handle any other case
-			log.Debug("misc error thrown, yikes")
-		}
-	}
 
-}
+//func customHTTPErrorHandler(err error, c echo.Context) {
+//	httpError, ok := err.(*echo.HTTPError)
+//	if ok {
+//		errorCode := httpError.Code
+//		switch errorCode {
+//		case http.StatusNotFound:
+//			// TODO: Smooth this over a bit
+//			err := c.Redirect(http.StatusPermanentRedirect, "/404.html")
+//			if err != nil {
+//				return
+//			}
+//		default:
+//			// TODO handle any other case
+//			log.Debug("misc error thrown, yikes")
+//		}
+//	}
+//
+//}

@@ -14,3 +14,12 @@ type Event struct {
 func (e Event) ToString() string {
 	return fmt.Sprintf("%d, %s, %s", e.Id, e.Time, e.Description)
 }
+
+type Attendee struct {
+	EventId int
+	Name    string
+}
+
+func (a Attendee) ToString() string {
+	return fmt.Sprintf("%d, %s", a.EventId, a.Name)
+}
