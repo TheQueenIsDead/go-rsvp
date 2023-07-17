@@ -55,9 +55,9 @@ func getEventsHandler(c echo.Context) error {
 	}
 	defer rows.Close()
 
-	var data []Events
+	var data []Event
 	for rows.Next() {
-		var e Events
+		var e Event
 		err = rows.Scan(&e.Id, &e.Time, &e.Description)
 		if err != nil {
 			log.WithError(err).Error("could not unmarshal events from database")
@@ -94,7 +94,7 @@ func getEventById(c echo.Context) error {
 
 	row := RsvpDatabase.DB.QueryRow("SELECT * FROM events WHERE id = ?", id)
 
-	var e Events
+	var e Event
 	err := row.Scan(&e.Id, &e.Time, &e.Description)
 	if err != nil {
 

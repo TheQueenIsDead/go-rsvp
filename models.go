@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-type Events struct {
+type Event struct {
 	Id          int
 	Time        time.Time
 	Description string
 }
 
-func (e Events) ToString() string {
+func (e Event) ToString() string {
 	return fmt.Sprintf("%d, %s, %s", e.Id, e.Time, e.Description)
 }
