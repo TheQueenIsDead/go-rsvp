@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+    <script src="https://unpkg.com/mustache@latest"></script>
 </head>
 <body>
 
@@ -32,5 +35,14 @@
     </tbody>
 </table>
 
+<form hx-post="/events/{{Id}}/attend">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text">
+    <button type="submit">Attend</button>
+</form>
+
+<div id="demo-div"></div>
+
 </body>
+
 </html>
