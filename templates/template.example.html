@@ -1,5 +1,11 @@
+{{!
+The following mustache syntax changes the delimiter to erb style tags.
+A change is required in order to ensure that the event template returns
+to the client with curly braces. Else, when the server renders this partial,
+the event template is rendered server side and defaults to empty strings.
+}}
+{{=<% %>=}}
 <h1>Hello World!</h1>
-
 <div hx-ext="client-side-templates">
     <button hx-get="https://jsonplaceholder.typicode.com/todos/1"
             hx-swap="innerHTML"
