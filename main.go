@@ -4,13 +4,13 @@ import (
 	"github.com/cbroglie/mustache"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
+	"go-rsvp/api"
+	"go-rsvp/container"
+	"go-rsvp/database"
+	"go-rsvp/ui"
 	"html/template"
 	"io"
 	"net/http"
-)
-
-var (
-	RsvpDatabase *Database
 )
 
 type Template struct {
@@ -68,13 +68,17 @@ func main() {
 	}
 
 	// Initialise Database
-	RsvpDatabase = NewDatabase()
-	RsvpDatabase.Init()
+	db := database.NewDatabase()
 
 	// Initialise Routes
-	InitAPI(e)
-	InitUI(e)
+	app := container.Application{
+		Server:   e,
+		Database: db,
+	}
+	database.Init(app)
+	api.Init(app)
+	ui.Init(app)
 
 	// Serve
-	e.Logger.Fatal(e.Start(":3000"))
+	e.Logger.Fatal(app.Server.Start(":3000"))
 }

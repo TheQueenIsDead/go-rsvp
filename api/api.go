@@ -1,22 +1,28 @@
-package main
+package api
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/labstack/echo/v4"
-	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
+	"go-rsvp/container"
+	"go-rsvp/models"
 	"net/http"
 )
 
-// InitAPI registers the application routes with the appropriate handlers,
-// passing in a datastore wrapper for the endpoints to utilise.
-func InitAPI(e *echo.Echo) {
+var (
+	app container.Application
+)
 
-	api := e.Group("/api")
+// Init registers the application routes with the appropriate handlers,
+// passing in a datastore wrapper for the endpoints to utilise.
+func Init(a container.Application) {
+
+	app = a
+
+	api := app.Server.Group("/api")
 
 	api.GET("/clicked", getClickedHandler)
-
 	api.GET("/events", getEventsHandler)
 	api.GET("/events/:id", getEventById)
 	api.POST("/events/:id/attend", createEventAttendance)
@@ -51,16 +57,16 @@ func getClickedHandler(c echo.Context) error {
 // getEventsHandler returns all events in the database
 func getEventsHandler(c echo.Context) error {
 
-	rows, err := RsvpDatabase.DB.Query("SELECT * FROM events")
+	rows, err := app.Database.Query("SELECT * FROM events")
 	if err != nil {
 		log.WithError(err).Error("could not retrieve events from database")
 		c.Response().WriteHeader(http.StatusInternalServerError)
 	}
 	defer rows.Close()
 
-	var data []Event
+	var data []models.Event
 	for rows.Next() {
-		var e Event
+		var e models.Event
 		err = rows.Scan(&e.Id, &e.Time, &e.Description)
 		if err != nil {
 			log.WithError(err).Error("could not unmarshal events from database")
@@ -103,9 +109,9 @@ func getEventById(c echo.Context) error {
 
 	id := c.Param("id")
 
-	row := RsvpDatabase.DB.QueryRow("SELECT * FROM events WHERE id = ?", id)
+	row := app.Database.QueryRow("SELECT * FROM events WHERE id = ?", id)
 
-	var e Event
+	var e models.Event
 	err := row.Scan(&e.Id, &e.Time, &e.Description)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -115,13 +121,13 @@ func getEventById(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 	}
 
-	rows, err := RsvpDatabase.DB.Query("SELECT * FROM attendees WHERE event_id = ?", id)
+	rows, err := app.Database.Query("SELECT * FROM attendees WHERE event_id = ?", id)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "could not get attendees")
 	}
-	var data []Attendee
+	var data []models.Attendee
 	for rows.Next() {
-		var a Attendee
+		var a models.Attendee
 		err = rows.Scan(&a.Name, &a.EventId)
 		if err != nil {
 			log.WithError(err).Error("could not unmarshal events from database")
@@ -153,7 +159,7 @@ func createEventAttendance(c echo.Context) error {
 
 	create := `insert into attendees (name, event_id) values (?, ?);`
 
-	_, err := RsvpDatabase.DB.Exec(create, name, id)
+	_, err := app.Database.Exec(create, name, id)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "could not create attendee")
 	}
