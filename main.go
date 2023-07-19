@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"html/template"
 	"io"
+	"net/http"
 )
 
 var (
@@ -18,7 +19,7 @@ type Template struct {
 
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 
-	output, err := mustache.RenderFileInLayout("templates/template.example.html", "templates/layout.index.html", nil)
+	output, err := mustache.RenderFileInLayout(name, "templates/layout.index.html", data)
 	//output, err := mustache.RenderFile(name, data)
 	if err != nil {
 		log.WithError(err).Error("could not render")
@@ -37,55 +38,43 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 func main() {
 
 	// Setup Logging
-	log.StandardLogger().SetReportCaller(true)
-	log.SetLevel(log.DebugLevel)
+	log.SetReportCaller(true)
+	log.SetLevel(log.InfoLevel)
 
 	// Setup Webserver
 	e := echo.New()
 
-	// Setup file server
-	log.Info("initialising file server")
+	// NOTE: https://echo.labstack.com/docs/static-files
 	e.Static("/", "static/")
-	log.Info("fileserver initialised")
-	//log.Info("fileserver initialised")
 
 	// NOTE: https://echo.labstack.com/docs/templates
 	e.Renderer = &Template{}
 
-	//e.RouteNotFound("/*", func(c echo.Context) error {
-	//	return c.Render(http.StatusNotFound, "templates/404.html", nil)
-	//})
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		httpError, ok := err.(*echo.HTTPError)
+		if ok {
+			errorCode := httpError.Code
+			switch errorCode {
+			case http.StatusNotFound:
+				err := c.Redirect(http.StatusTemporaryRedirect, "/404")
+				if err != nil {
+					log.WithError(err).Error("error redirecting 404")
+				}
+			default:
+				// TODO handle any other case
+				log.Infof("unhandled http error: %v", err)
+			}
+		}
+	}
 
-	//e.HTTPErrorHandler = customHTTPErrorHandler
-
-	// Setup DB
+	// Initialise Database
 	RsvpDatabase = NewDatabase()
 	RsvpDatabase.Init()
 
-	// Setup API
-	log.Info("initializing api")
+	// Initialise Routes
 	InitAPI(e)
-	log.Info("api initialised")
+	InitUI(e)
 
 	// Serve
-	e.Logger.Fatal(e.Start(":6969"))
+	e.Logger.Fatal(e.Start(":3000"))
 }
-
-//func customHTTPErrorHandler(err error, c echo.Context) {
-//	httpError, ok := err.(*echo.HTTPError)
-//	if ok {
-//		errorCode := httpError.Code
-//		switch errorCode {
-//		case http.StatusNotFound:
-//			// TODO: Smooth this over a bit
-//			err := c.Redirect(http.StatusPermanentRedirect, "/404.html")
-//			if err != nil {
-//				return
-//			}
-//		default:
-//			// TODO handle any other case
-//			log.Debug("misc error thrown, yikes")
-//		}
-//	}
-//
-//}
