@@ -1,32 +1,37 @@
+{{!
+The following mustache syntax changes the delimiter to erb style tags.
+A change is required in order to ensure that the event template returns
+to the client with curly braces. Else, when the server renders this partial,
+the event template is rendered server side and defaults to empty strings.
+}}
+{{=<% %>=}}
 
-
-<h1>
-    Events
-</h1>
+<h1>Events Template</h1>
 
 <div hx-ext="client-side-templates">
-    <button hx-get="https://jsonplaceholder.typicode.com/todos/1"
-            hx-swap="innerHTML"
-            hx-target="#content"
-            mustache-template="foo">
-        Click Me
-    </button>
-
-    <p id="content">Start</p>
-
-
-<!--    // TODO: If we serve mustache, then the tags get stripped out before being delivered to the client....-->
-    <template id="foo">
-        <p> userId: {{{userId}}} </p>
-        <p> id: {{{id}}} </p>
-        <p> title: {{{title}}} </p>
-        <p> completed: {{{completed}}} </p>
-    </template>
+    <table hx-get="/api/events" hx-swap="innerHTML" hx-target="#content" mustache-template="event" hx-trigger="load">
+        <thead>
+        <tr>
+            <td> Time</td>
+            <td> Description</td>
+            <td> Link</td>
+        </tr>
+        </thead>
+        <tbody id="content">
+        </tbody>
+    </table>
 </div>
 
-<!--<script id="mustache-post-advert" type="text/mustache">-->
-<!--   <p> userId: {{userId}} </p>-->
-<!--    <p> id: {{id}} </p>-->
-<!--    <p> title: {{title}} </p>-->
-<!--    <p> completed: {{completed}} </p>-->
-<!-- </script>-->
+<template id="event">
+    {{#.}}
+    <tr>
+        <td> {{time}}</td>
+        <td> {{description}}</td>
+        <td>
+            <button><!--suppress HtmlUnknownTarget -->
+                <a href="{{_links.self}}">{{_links.self}}</a>
+            </button>
+        </td>
+    </tr>
+    {{/.}}
+</template>

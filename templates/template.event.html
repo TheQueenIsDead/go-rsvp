@@ -1,0 +1,43 @@
+{{!
+The following mustache syntax changes the delimiter to erb style tags.
+A change is required in order to ensure that the event template returns
+to the client with curly braces. Else, when the server renders this partial,
+the event template is rendered server side and defaults to empty strings.
+}}
+{{=<% %>=}}
+
+
+<h1> Event </h1>
+
+<div id="eventContent" hx-ext="client-side-templates" hx-get="/api/events/<% eventId %>" hx-swap="innerHTML" hx-target="#eventContent" mustache-template="event" hx-trigger="load"></div>
+<template id="event">
+
+    <table>
+        <thead>
+        <tr>
+            <td>Id</td>
+            <td>Time</td>
+            <td>Desc</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{event.Id}}</td>
+            <td>{{event.Time}}</td>
+            <td>{{event.Description}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        {{#attendees}}
+        <li>{{Name}}</li>
+        {{/attendees}}
+    </ul>
+</template>
+
+<form hx-post="/api/events/<% eventId %>/attend">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text">
+    <button type="submit">Attend</button>
+</form>
