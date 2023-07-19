@@ -1,21 +1,28 @@
-package main
+package ui
 
 import (
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
+	"go-rsvp/container"
 	"net/http"
 )
 
-// InitUI registers the application UI routes with the appropriate rendering handlers.
-func InitUI(e *echo.Echo) {
+var (
+	app container.Application
+)
+
+// Init registers the application UI routes with the appropriate rendering handlers.
+func Init(a container.Application) {
+
+	app = a
 
 	// Top Level Redirect
-	e.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/events") })
-	e.GET("/404", notFound)
+	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/events") })
+	app.Server.GET("/404", notFound)
 
 	// Paths
-	e.GET("/events", events)
-	e.GET("/events/:id", eventsById)
+	app.Server.GET("/events", events)
+	app.Server.GET("/events/:id", eventsById)
 
 }
 
