@@ -12,12 +12,14 @@ import (
 // InitAPI registers the application routes with the appropriate handlers,
 // passing in a datastore wrapper for the endpoints to utilise.
 func InitAPI(e *echo.Echo) {
-	e.GET("/demo", getDemo)
-	e.GET("/clicked", getClickedHandler)
 
-	e.GET("/events", getEventsHandler)
-	e.GET("/events/:id", getEventById)
-	e.POST("/events/:id/attend", createEventAttendance)
+	api := e.Group("/api")
+
+	api.GET("/clicked", getClickedHandler)
+
+	api.GET("/events", getEventsHandler)
+	api.GET("/events/:id", getEventById)
+	api.POST("/events/:id/attend", createEventAttendance)
 
 }
 
@@ -67,10 +69,6 @@ func getEventsHandler(c echo.Context) error {
 		data = append(data, e)
 	}
 
-	//var result string
-	//for _, e := range data {
-	//	result += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", e.Time, e.Description)
-	//}
 	var result []map[string]interface{}
 	for _, e := range data {
 		evt := map[string]interface{}{
@@ -93,7 +91,6 @@ func getEventsHandler(c echo.Context) error {
 				},
 			},
 		}
-		//result += fmt.Sprintf("<tr><td>%s</td><td>%s</td></tr>", e.Time, e.Description)
 		result = append(result, evt)
 	}
 
@@ -111,7 +108,6 @@ func getEventById(c echo.Context) error {
 	var e Event
 	err := row.Scan(&e.Id, &e.Time, &e.Description)
 	if err != nil {
-
 		if err == sql.ErrNoRows {
 			return c.Render(http.StatusNotFound, "templates/404.html", nil)
 		}
@@ -119,9 +115,32 @@ func getEventById(c echo.Context) error {
 		c.Response().WriteHeader(http.StatusInternalServerError)
 	}
 
+	rows, err := RsvpDatabase.DB.Query("SELECT * FROM attendees WHERE event_id = ?", id)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "could not get attendees")
+	}
+	var data []Attendee
+	for rows.Next() {
+		var a Attendee
+		err = rows.Scan(&a.Name, &a.EventId)
+		if err != nil {
+			log.WithError(err).Error("could not unmarshal events from database")
+			c.Response().WriteHeader(http.StatusInternalServerError)
+		}
+		data = append(data, a)
+	}
+
 	log.Warn("Hello am in event by id")
 
-	return c.Render(200, "templates/event.html", e)
+	response := map[string]interface{}{
+		"event":     e,
+		"attendees": data,
+	}
+
+	return c.JSON(200, response)
+
+	// TODO: Remove all UI render functions from the UI handlers file
+	//return c.Render(200, "templates/event.html", e)
 
 }
 
@@ -141,16 +160,4 @@ func createEventAttendance(c echo.Context) error {
 
 	return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
 
-}
-
-func getDemo(c echo.Context) error {
-
-	return c.Render(200, "", nil)
-
-	//content, err := mustache.RenderFileInLayout("templates/template.example.html", "templates/layout.index.html", nil)
-	//if err != nil {
-	//	log.Error(err)
-	//}
-	//c.Response().Header().Add("content-type", "text/html")
-	//return c.String(200, content)
 }
