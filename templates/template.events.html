@@ -9,7 +9,7 @@ the event template is rendered server side and defaults to empty strings.
 <h1>Events Template</h1>
 
 <div hx-ext="client-side-templates">
-    <table hx-get="/api/events" hx-swap="innerHTML" hx-target="#content" mustache-template="event" hx-trigger="load">
+    <table hx-get="/api/events" hx-swap="innerHTML" hx-target="#events" mustache-template="event" hx-trigger="load">
         <thead>
         <tr>
             <td> Time</td>
@@ -17,7 +17,7 @@ the event template is rendered server side and defaults to empty strings.
             <td> Link</td>
         </tr>
         </thead>
-        <tbody id="content">
+        <tbody id="events">
         </tbody>
     </table>
 </div>
