@@ -12,9 +12,10 @@ the event template is rendered server side and defaults to empty strings.
     <table hx-get="/api/events" hx-swap="innerHTML" hx-target="#events" mustache-template="event" hx-trigger="load">
         <thead>
         <tr>
-            <td> Time</td>
-            <td> Description</td>
-            <td> Link</td>
+            <td> Date </td>
+            <td> Event </td>
+            <td> Description </td>
+            <td> Link </td>
         </tr>
         </thead>
         <tbody id="events">
@@ -25,8 +26,9 @@ the event template is rendered server side and defaults to empty strings.
 <template id="event">
     {{#.}}
     <tr>
-        <td> {{time}}</td>
-        <td> {{description}}</td>
+        <td> {{date}} </td>
+        <td> {{name}} </td>
+        <td> {{description}} </td>
         <td>
             <button><!--suppress HtmlUnknownTarget -->
                 <a href="{{_links.self}}">{{_links.self}}</a>

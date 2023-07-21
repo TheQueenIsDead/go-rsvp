@@ -1,13 +1,14 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/container"
+	"go-rsvp/database"
 	"go-rsvp/models"
 	"net/http"
+	"strconv"
 )
 
 var (
@@ -58,33 +59,21 @@ func getClickedHandler(c echo.Context) error {
 // getEventsHandler returns all events in the database
 func getEventsHandler(c echo.Context) error {
 
-	rows, err := app.Database.Query("SELECT * FROM events")
+	events, err := database.GetEvents()
 	if err != nil {
-		log.WithError(err).Error("could not retrieve events from database")
-		c.Response().WriteHeader(http.StatusInternalServerError)
-	}
-	defer rows.Close()
-
-	var data []models.Event
-	for rows.Next() {
-		var e models.Event
-		err = rows.Scan(&e.Id, &e.Time, &e.Description)
-		if err != nil {
-			log.WithError(err).Error("could not unmarshal events from database")
-			c.Response().WriteHeader(http.StatusInternalServerError)
-		}
-		data = append(data, e)
+		log.WithError(err).Error("api: could not get events from database")
 	}
 
 	var result []map[string]interface{}
-	for _, e := range data {
+	for _, e := range events {
 		evt := map[string]interface{}{
-			"time":        e.Time,
+			"date":        e.Date,
+			"name":        e.Name,
 			"description": e.Description,
 			"_links": map[string]interface{}{
-				"self": fmt.Sprintf("/events/%d", e.Id),
+				"self": fmt.Sprintf("/events/%d", e.ID),
 				"_templates": map[string]interface{}{
-					fmt.Sprintf("/events/%d", e.Id): map[string]interface{}{
+					fmt.Sprintf("/events/%d", e.ID): map[string]interface{}{
 						"title":       "Attend",
 						"method":      "POST",
 						"contentType": "application/json",
@@ -108,47 +97,28 @@ func getEventsHandler(c echo.Context) error {
 // getEventsHandler returns an event by its ID
 func getEventById(c echo.Context) error {
 
-	id := c.Param("id")
-
-	row := app.Database.QueryRow("SELECT * FROM events WHERE id = ?", id)
-
-	var e models.Event
-	err := row.Scan(&e.Id, &e.Time, &e.Description)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return c.Redirect(http.StatusTemporaryRedirect, "/404")
-		}
-		log.WithError(err).Error("could not unmarshal events from database")
-		c.Response().WriteHeader(http.StatusInternalServerError)
+		log.WithError(err).WithField("event_id", c.Param("id")).Error("failed to parse event id")
 	}
 
-	rows, err := app.Database.Query("SELECT * FROM attendees WHERE event_id = ?", id)
+	event, err := database.GetEventById(id)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "could not get attendees")
-	}
-	var data []models.Attendee
-	for rows.Next() {
-		var a models.Attendee
-		err = rows.Scan(&a.Name, &a.EventId)
-		if err != nil {
-			log.WithError(err).Error("could not unmarshal events from database")
-			c.Response().WriteHeader(http.StatusInternalServerError)
-		}
-		data = append(data, a)
+		log.WithError(err).Error("failed to parse event id")
 	}
 
-	log.Warn("Hello am in event by id")
+	attendees, err := database.GetAttendeesForEvent(event)
+	if err != nil {
+		log.WithError(err).Error("failed to retrieve attendees for event")
+	}
 
+	// TODO: Tidy this up a wee bit.
 	response := map[string]interface{}{
-		"event":     e,
-		"attendees": data,
+		"event":     event,
+		"attendees": attendees,
 	}
 
 	return c.JSON(200, response)
-
-	// TODO: Remove all UI render functions from the UI handlers file
-	//return c.Render(200, "templates/event.html", e)
-
 }
 
 // createEventAttendance allows us to register people for an event
@@ -156,13 +126,18 @@ func getEventById(c echo.Context) error {
 func createEventAttendance(c echo.Context) error {
 
 	name := c.FormValue("name")
-	id := c.Param("id")
+	id, _ := strconv.Atoi(c.Param("id"))
 
-	create := `insert into attendees (name, event_id) values (?, ?);`
+	attendee := models.Attendee{
+		Name:    name,
+		EventId: id,
+	}
 
-	_, err := app.Database.Exec(create, name, id)
+	res := app.Database.Create(&attendee)
+	err := res.Error
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "could not create attendee")
+
 	}
 
 	return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
@@ -181,12 +156,10 @@ func createEvent(c echo.Context) error {
 
 	// message=parsing time \"2014-11-16T15:25:33\" as \"2006-01-02T15:04:05Z07:00\"
 
-	res, err := app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", event.Time, event.Name, event.Description)
-	log.Debug(event)
-	log.Debug(res.LastInsertId())
-	log.Debug(res.RowsAffected())
+	res := app.Database.Create(&event)
+	err = res.Error
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "bad request")
+		log.WithError(err).Error("could not create event")
 	}
 
 	return c.String(http.StatusOK, "OK")
