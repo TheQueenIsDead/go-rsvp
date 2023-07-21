@@ -25,10 +25,12 @@ func Init(a container.Application) {
 	// Paths
 	app.Server.GET("/events", events)
 	app.Server.GET("/events/:id", eventsById)
+	app.Server.GET("/events/new", eventsCreation)
 
 	// Partial Paths
 	app.Server.GET("/partial/events", eventsPartial)
 	app.Server.GET("/partial/events/:id", eventsByIdPartial)
+	app.Server.GET("/partial/events/new", eventsCreationPartial)
 
 }
 
@@ -36,16 +38,10 @@ func notFound(c echo.Context) error {
 	return c.Render(200, "templates/template.404.html", nil)
 }
 
+// /events
 func events(c echo.Context) error {
 	return c.Render(200, "templates/template.events.html", nil)
 }
-
-func eventsById(c echo.Context) error {
-	return c.Render(200, "templates/template.event.html", map[string]interface{}{
-		"eventId": c.Param("id"),
-	})
-}
-
 func eventsPartial(c echo.Context) error {
 	output, err := mustache.RenderFile("templates/template.events.html")
 	if err != nil {
@@ -55,10 +51,29 @@ func eventsPartial(c echo.Context) error {
 	return c.HTML(200, output)
 }
 
+// /events/:id
+func eventsById(c echo.Context) error {
+	return c.Render(200, "templates/template.event.html", map[string]interface{}{
+		"eventId": c.Param("id"),
+	})
+}
 func eventsByIdPartial(c echo.Context) error {
 	output, err := mustache.RenderFile("templates/template.event.html", map[string]interface{}{
 		"eventId": c.Param("id"),
 	})
+	if err != nil {
+		log.WithError(err).Error("could not render")
+		return err
+	}
+	return c.HTML(200, output)
+}
+
+// /events/new
+func eventsCreation(c echo.Context) error {
+	return c.Render(200, "templates/template.event.create.html", nil)
+}
+func eventsCreationPartial(c echo.Context) error {
+	output, err := mustache.RenderFile("templates/template.event.create.html")
 	if err != nil {
 		log.WithError(err).Error("could not render")
 		return err
