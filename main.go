@@ -39,7 +39,7 @@ func main() {
 
 	// Setup Logging
 	log.SetReportCaller(true)
-	log.SetLevel(log.InfoLevel)
+	log.SetLevel(log.DebugLevel)
 
 	// Setup Webserver
 	e := echo.New()

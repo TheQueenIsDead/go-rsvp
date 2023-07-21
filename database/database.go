@@ -36,7 +36,9 @@ func Init(a container.Application) {
 	CREATE TABLE IF NOT EXISTS events (
 		id INTEGER NOT NULL PRIMARY KEY,
 		time DATETIME NOT NULL,
-		description TEXT
+		name TEXT,
+		description TEXT,
+	  	minimumAttendees INTEGER DEFAULT 0
 	);`
 	res, err := app.Database.Exec(create)
 	if err != nil {
@@ -57,10 +59,10 @@ func Init(a container.Application) {
 	}
 
 	// Add example
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?);", time.Now(), "Beers")
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?);", time.Now(), "Pool")
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?);", time.Now(), "Quiz")
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?);", time.Now(), "Example event with a slightly longer description, something something coffee at New Brighton beach.")
+	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Beers", "desc1")
+	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Pool", "desc2")
+	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Quiz", "desc3")
+	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Puppy walk", "Example event with a slightly longer description, something something coffee at New Brighton beach.")
 	if err != nil {
 		log.WithError(err).Panicf("could not init database: %s", res)
 	}

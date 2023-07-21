@@ -24,6 +24,7 @@ func Init(a container.Application) {
 
 	api.GET("/clicked", getClickedHandler)
 	api.GET("/events", getEventsHandler)
+	api.POST("/events/new", createEvent)
 	api.GET("/events/:id", getEventById)
 	api.POST("/events/:id/attend", createEventAttendance)
 
@@ -115,7 +116,7 @@ func getEventById(c echo.Context) error {
 	err := row.Scan(&e.Id, &e.Time, &e.Description)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return c.Render(http.StatusNotFound, "templates/404.html", nil)
+			return c.Redirect(http.StatusTemporaryRedirect, "/404")
 		}
 		log.WithError(err).Error("could not unmarshal events from database")
 		c.Response().WriteHeader(http.StatusInternalServerError)
@@ -165,5 +166,40 @@ func createEventAttendance(c echo.Context) error {
 	}
 
 	return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
+
+}
+
+func createEvent(c echo.Context) error {
+
+	// in the handler for /users?id=<userID>
+	var event models.Event
+	err := c.Bind(&event)
+	if err != nil {
+		log.WithError(err).Error("could not bind")
+		return c.String(http.StatusBadRequest, "bad request")
+	}
+
+	// message=parsing time \"2014-11-16T15:25:33\" as \"2006-01-02T15:04:05Z07:00\"
+
+	res, err := app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", event.Time, event.Name, event.Description)
+	log.Debug(event)
+	log.Debug(res.LastInsertId())
+	log.Debug(res.RowsAffected())
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "bad request")
+	}
+
+	return c.String(http.StatusOK, "OK")
+	//name := c.FormValue("name")
+	//id := c.Param("id")
+	//
+	//create := `insert into attendees (name, event_id) values (?, ?);`
+	//
+	//_, err := app.Database.Exec(create, name, id)
+	//if err != nil {
+	//	return c.String(http.StatusInternalServerError, "could not create attendee")
+	//}
+	//
+	//return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
 
 }
