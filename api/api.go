@@ -146,36 +146,20 @@ func createEventAttendance(c echo.Context) error {
 
 func createEvent(c echo.Context) error {
 
-	// in the handler for /users?id=<userID>
 	var event models.Event
 	err := c.Bind(&event)
-
-	// Because the event date field is a custom field from goorm, it's a sturggle
 
 	if err != nil {
 		log.WithError(err).Error("could not bind")
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	// message=parsing time \"2014-11-16T15:25:33\" as \"2006-01-02T15:04:05Z07:00\"
-
 	res := app.Database.Create(&event)
 	err = res.Error
 	if err != nil {
 		log.WithError(err).Error("could not create event")
+		return c.String(http.StatusInternalServerError, "could not process event")
 	}
 
 	return c.String(http.StatusOK, "OK")
-	//name := c.FormValue("name")
-	//id := c.Param("id")
-	//
-	//create := `insert into attendees (name, event_id) values (?, ?);`
-	//
-	//_, err := app.Database.Exec(create, name, id)
-	//if err != nil {
-	//	return c.String(http.StatusInternalServerError, "could not create attendee")
-	//}
-	//
-	//return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
-
 }
