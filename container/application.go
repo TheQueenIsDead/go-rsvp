@@ -1,11 +1,11 @@
 package container
 
 import (
-	"database/sql"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type Application struct {
 	Server   *echo.Echo
-	Database *sql.DB
+	Database *gorm.DB
 }
