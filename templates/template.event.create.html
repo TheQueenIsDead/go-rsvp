@@ -1,0 +1,31 @@
+{{!
+The following mustache syntax changes the delimiter to erb style tags.
+A change is required in order to ensure that the event template returns
+to the client with curly braces. Else, when the server renders this partial,
+the event template is rendered server side and defaults to empty strings.
+}}
+{{=<% %>=}}
+
+
+<h1> New Event </h1>
+
+<form hx-post="/api/events/new">
+    <section>
+        <div class="grid-container">
+            <!-- Title -->
+            <label class="grid-item" for="title"><span>Name:</span><strong><span aria-label="required">*</span></strong></label>
+            <input class="grid-item" type="text" id="title" name="title" required />
+            <!-- Description -->
+            <label class="grid-item" for="description"><span>Description:</span><strong><span aria-label="required">*</span></strong></label>
+            <input class="grid-item" type="text" id="description" name="description" required />
+            <!-- Date -->
+            <label class="grid-item" for="date" >Date:</label>
+            <input class="grid-item" type="datetime-local" id="date" name="date" value="2014-11-16 15:25">
+<!--            value="<% date.minimum %>" min="<% date.minimum %>" max="<% date.maximum %>" required>-->
+            <!-- Minimum Attendees -->
+            <label class="grid-item" for="minimumAttendees" >Required Attendees:</label>
+            <input class="grid-item" type="number" id="minimumAttendees" name="minimumAttendees" value="0">
+        </div>
+    </section>
+    <button type="submit">Create</button>
+</form>
