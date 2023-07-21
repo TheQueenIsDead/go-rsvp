@@ -149,6 +149,9 @@ func createEvent(c echo.Context) error {
 	// in the handler for /users?id=<userID>
 	var event models.Event
 	err := c.Bind(&event)
+
+	// Because the event date field is a custom field from goorm, it's a sturggle
+
 	if err != nil {
 		log.WithError(err).Error("could not bind")
 		return c.String(http.StatusBadRequest, "bad request")
