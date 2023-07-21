@@ -17,7 +17,7 @@ type Template struct {
 	templates *template.Template
 }
 
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *Template) Render(w io.Writer, name string, data interface{}, _ echo.Context) error {
 
 	output, err := mustache.RenderFileInLayout(name, "templates/layout.index.html", data)
 	//output, err := mustache.RenderFile(name, data)
@@ -69,13 +69,13 @@ func main() {
 
 	// Initialise Database
 	db := database.NewDatabase()
+	database.Init(db)
 
 	// Initialise Routes
 	app := container.Application{
 		Server:   e,
 		Database: db,
 	}
-	database.Init(app)
 	api.Init(app)
 	ui.Init(app)
 

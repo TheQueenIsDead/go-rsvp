@@ -1,10 +1,12 @@
 package database
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/container"
+	"go-rsvp/models"
+	"gorm.io/datatypes"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -14,58 +16,48 @@ var (
 	app container.Application
 )
 
-func NewDatabase() *sql.DB {
+func NewDatabase() *gorm.DB {
 
-	log.Info("creating new database")
-	db := &sql.DB{}
-	db, err := sql.Open("sqlite3", databaseFileName)
+	db, err := gorm.Open(sqlite.Open(databaseFileName), &gorm.Config{})
 	if err != nil {
-		log.WithError(err).Panic("could not open database")
+		panic("failed to connect database")
 	}
+
 	return db
 }
 
-func Init(a container.Application) {
+func Init(db *gorm.DB) {
 
-	app = a
+	app.Database = db
 
 	log.Info("initialising database")
 
-	// Create events table
-	create := `
-	CREATE TABLE IF NOT EXISTS events (
-		id INTEGER NOT NULL PRIMARY KEY,
-		time DATETIME NOT NULL,
-		name TEXT,
-		description TEXT,
-	  	minimumAttendees INTEGER DEFAULT 0
-	);`
-	res, err := app.Database.Exec(create)
-	if err != nil {
-		log.WithError(err).Panicf("could not init database: %s", res)
+	// Migrate the schema
+	schemas := []interface{}{
+		&models.Event{},
+		&models.Attendee{},
+	}
+	for _, s := range schemas {
+		err := db.AutoMigrate(s)
+		if err != nil {
+			log.WithError(err).WithField("schema", s).Panic("could not automigrate schema")
+		}
 	}
 
-	// Create attendees table
-	create = `
-	create table if not exists attendees (
-	name     integer,
-	event_id integer
-		constraint attendees_events_id_fk
-			references events
-	);`
-	res, err = app.Database.Exec(create)
-	if err != nil {
-		log.WithError(err).Panicf("could not init database: %s", res)
+	// Create
+	events := []models.Event{
+		{Date: datatypes.Date(time.Now()), Name: "Beers", Description: "Dizzy with the fizzy!", MinimumAttendees: 0},
+		{Date: datatypes.Date(time.Now()), Name: "Pool", Description: "Time to shark!", MinimumAttendees: 4},
+		{Date: datatypes.Date(time.Now()), Name: "Quiz", Description: "At the Dux!", MinimumAttendees: 6},
+		{Date: datatypes.Date(time.Now()), Name: "Puppy Walk", Description: "Heading to the New Brighton beach, usual place :^)", MinimumAttendees: 0},
+	}
+	for _, e := range events {
+		res := db.Create(&e)
+		err := res.Error
+		if err != nil {
+			log.WithError(err).Panic("could not insert events on startup")
+		}
 	}
 
-	// Add example
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Beers", "desc1")
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Pool", "desc2")
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Quiz", "desc3")
-	res, err = app.Database.Exec("INSERT INTO events VALUES(NULL,?,?,?,NULL);", time.Now(), "Puppy walk", "Example event with a slightly longer description, something something coffee at New Brighton beach.")
-	if err != nil {
-		log.WithError(err).Panicf("could not init database: %s", res)
-	}
-
-	log.Infof("database initialised")
+	log.Info("database initialised")
 }

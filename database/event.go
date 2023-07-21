@@ -5,23 +5,22 @@ import (
 	"go-rsvp/models"
 )
 
-func getEvents() (data []models.Event, err error) {
-
-	rows, err := app.Database.Query("SELECT * FROM events")
-	defer rows.Close()
+func GetEvents() ([]models.Event, error) {
+	var events []models.Event
+	result := app.Database.Find(&events)
+	err := result.Error
 	if err != nil {
-		log.WithError(err).Error("could not retrieve events from database")
-		return
+		log.WithError(err).Error("database: could not retrieve events")
 	}
+	return events, err
+}
 
-	for rows.Next() {
-		var e models.Event
-		err = rows.Scan(&e.Id, &e.Time, &e.Description)
-		if err != nil {
-			log.WithError(err).Error("could not unmarshal events from database")
-			return
-		}
-		data = append(data, e)
+func GetEventById(id int) (models.Event, error) {
+	var event models.Event
+	result := app.Database.Find(&event, id)
+	err := result.Error
+	if err != nil {
+		log.WithError(err).WithField("id", id).Error("database: could not retrieve event")
 	}
-	return
+	return event, err
 }
