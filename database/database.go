@@ -46,10 +46,10 @@ func Init(db *gorm.DB) {
 
 	// Create
 	events := []models.Event{
-		{Date: datatypes.Date(time.Now()), Name: "Beers", Description: "Dizzy with the fizzy!", MinimumAttendees: 0},
-		{Date: datatypes.Date(time.Now()), Name: "Pool", Description: "Time to shark!", MinimumAttendees: 4},
-		{Date: datatypes.Date(time.Now()), Name: "Quiz", Description: "At the Dux!", MinimumAttendees: 6},
-		{Date: datatypes.Date(time.Now()), Name: "Puppy Walk", Description: "Heading to the New Brighton beach, usual place :^)", MinimumAttendees: 0},
+		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Beers", Description: "Dizzy with the fizzy!", MinimumAttendees: 0},
+		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Pool", Description: "Time to shark!", MinimumAttendees: 4},
+		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Quiz", Description: "At the Dux!", MinimumAttendees: 6},
+		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Puppy Walk", Description: "Heading to the New Brighton beach, usual place :^)", MinimumAttendees: 0},
 	}
 	for _, e := range events {
 		res := db.Create(&e)
