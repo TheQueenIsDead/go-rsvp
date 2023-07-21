@@ -50,6 +50,8 @@ func main() {
 	// NOTE: https://echo.labstack.com/docs/templates
 	e.Renderer = &Template{}
 
+	//e.Binder = new(models.EventBinder)
+
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		httpError, ok := err.(*echo.HTTPError)
 		if ok {
