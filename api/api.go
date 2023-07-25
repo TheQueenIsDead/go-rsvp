@@ -71,7 +71,8 @@ func getEventsHandler(c echo.Context) error {
 			"name":        e.Name,
 			"description": e.Description,
 			"_links": map[string]interface{}{
-				"self": fmt.Sprintf("/events/%d", e.ID),
+				"self":    fmt.Sprintf("/events/%d", e.ID),
+				"partial": fmt.Sprintf("/partial/events/%d", e.ID),
 				"_templates": map[string]interface{}{
 					fmt.Sprintf("/events/%d", e.ID): map[string]interface{}{
 						"title":       "Attend",
