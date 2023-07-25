@@ -1,7 +1,8 @@
-html, body{
-    margin:0;
-    padding:0;
+html, body {
+    margin: 0;
+    padding: 0;
 }
+
 #content {
     padding: 10px;
 }
@@ -45,8 +46,6 @@ Navbar
 }
 
 
-
-
 /*
 Grid
 */
@@ -57,6 +56,7 @@ Grid
     padding: 3px;
     width: 100px;
 }
+
 .grid-item {
     /*background-color: rgba(255, 255, 255, 0.8);*/
     /*border: 1px solid rgba(0, 0, 0, 0.8);*/

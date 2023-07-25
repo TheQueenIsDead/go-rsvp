@@ -38,6 +38,16 @@ the event template is rendered server side and defaults to empty strings.
         <li>{{Name}}</li>
         {{/attendees}}
     </ul>
+
+    <span>
+        <label for="attendeeCount">Reservation progress:</label>
+        <meter id="attendeeCount" value="{{attendees.length}}" min="0" max="{{event.MinimumAttendees}}"></meter>
+        <span> {{attendees.length}} </span>
+    </span>
+
+    <br>
+    <br>
+
 </template>
 
 <form hx-post="/api/events/<% eventId %>/attend">
