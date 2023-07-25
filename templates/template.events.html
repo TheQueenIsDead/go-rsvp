@@ -9,31 +9,19 @@ the event template is rendered server side and defaults to empty strings.
 <h1>Events Template</h1>
 
 <div hx-ext="client-side-templates">
-    <table hx-get="/api/events" hx-swap="innerHTML" hx-target="#events" mustache-template="event" hx-trigger="load">
-        <thead>
-        <tr>
-            <td> Date </td>
-            <td> Event </td>
-            <td> Description </td>
-            <td> Link </td>
-        </tr>
-        </thead>
-        <tbody id="events">
-        </tbody>
-    </table>
+    <div class="list-group" hx-get="/api/events" hx-swap="innerHTML" hx-target="#events" mustache-template="event" hx-trigger="load">
+        <div id="events">
+        </div>
+    </div>
 </div>
 
 <template id="event">
     {{#.}}
-    <tr>
-        <td> {{date}} </td>
-        <td> {{name}} </td>
-        <td> {{description}} </td>
-        <td>
-            <button><!--suppress HtmlUnknownTarget -->
-                <a href="{{_links.self}}">{{_links.self}}</a>
-            </button>
-        </td>
-    </tr>
+    <!--suppress HtmlUnknownTarget -->
+    <a href="{{_links.self}}" class="list-group-item">
+        <h4 class="list-group-item-heading">{{name}}</h4>
+        <h5 class="list-group-item-heading">{{date}}</h5>
+        <p class="list-group-item-text">{{description}}</p>
+    </a>
     {{/.}}
 </template>
