@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/htmx.org@1.9.3"></script>
     <script src="https://unpkg.com/htmx.org@1.9.3/dist/ext/client-side-templates.js"></script>
     <script src="https://unpkg.com/mustache@4.2.0"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
     <link rel="stylesheet" href="/styles.css">
 </head>
 
@@ -18,10 +19,9 @@
 <body>
     <div id="navbar">
         <ul>
-            <li><a hx-get="/partial/events" hx-trigger="click" hx-target="#content" hx-push-url="/events">Events</a></li>
-            <li><a hx-get="/partial/events/4" hx-trigger="click" hx-target="#content" hx-push-url="/events/4">4</a></li>
-            <li><a hx-get="/partial/events/new" hx-trigger="click" hx-target="#content" hx-push-url="/events/new">New</a></li>
-            <li style="float:right"><a class="active" href="#tbd">TBD...</a></li>
+            <li><a _="on click remove .active from <a/> in #navbar then add .active" hx-get="/partial/events" hx-trigger="click" hx-target="#content" hx-push-url="/events">Events</a></li>
+            <li><a _="on click remove .active from <a/> in #navbar then add .active" hx-get="/partial/events/4" hx-trigger="click" hx-target="#content" hx-push-url="/events/4">4</a></li>
+            <li><a _="on click remove .active from <a/> in #navbar then add .active" hx-get="/partial/events/new" hx-trigger="click" hx-target="#content" hx-push-url="/events/new">New</a></li>
         </ul>
     </div>
     <div id="content">
