@@ -48,6 +48,25 @@ the event template is rendered server side and defaults to empty strings.
     <br>
     <br>
 
+
+    <!-- TODO: Fully change event to bootstrap template for delightful UI-->
+    <!-- TODO: Calculate how many days until the event -->
+    <!-- TODO: Display the event time nicely -->
+    <!-- TODO: Add a button to attend and handle the API response better -->
+    <!-- TODO: Convert progress to bootstrap component(?) -->
+    <div class="row">
+        <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/007/306/850/small/beer-glasses-hand-drawn-illustration-cheers-lettering-phrase-cartoon-style-design-for-logo-banner-poster-greeting-cards-web-invitation-to-party-vector.jpg" alt="...">
+                <div class="caption">
+                    <h3>{{event.Name}}</h3>
+                    <p>{{event.Description}}</p>
+                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <form hx-post="/api/events/<% eventId %>/attend">
