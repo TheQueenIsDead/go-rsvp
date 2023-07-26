@@ -19,10 +19,20 @@ the event template is rendered server side and defaults to empty strings.
             <!-- Description -->
             <label class="grid-item" for="description"><span>Description:</span><strong><span aria-label="required">*</span></strong></label>
             <input class="grid-item" type="text" id="description" name="description" required />
+<!--            &lt;!&ndash; Date &ndash;&gt;-->
+<!--            <label class="grid-item" for="date" >Date:</label>-->
+<!--            <input class="grid-item" type="datetime-local" id="date" name="date" value="2014-11-16 15:25">-->
+<!--            value="<% date.minimum %>" min="<% date.minimum %>" max="<% date.maximum %>" required>-->
+
             <!-- Date -->
             <label class="grid-item" for="date" >Date:</label>
-            <input class="grid-item" type="datetime-local" id="date" name="date" value="2014-11-16 15:25">
-<!--            value="<% date.minimum %>" min="<% date.minimum %>" max="<% date.maximum %>" required>-->
+            <input class="grid-item" type="date" id="date" name="date" value="2018-07-22 15:25">
+            <!-- Time -->
+            <label class="grid-item" for="time" >Time:</label>
+            <input class="grid-item" type="time" id="time" name="time">
+
+
+
             <!-- Minimum Attendees -->
             <label class="grid-item" for="minimumAttendees" >Required Attendees:</label>
             <input class="grid-item" type="number" id="minimumAttendees" name="minimumAttendees" value="0">
