@@ -4,10 +4,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/container"
 	"go-rsvp/models"
-	"gorm.io/datatypes"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"time"
 )
 
 const databaseFileName = "rsvp.db"
@@ -44,20 +42,20 @@ func Init(db *gorm.DB) {
 		}
 	}
 
-	// Create
-	events := []models.Event{
-		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Beers", Description: "Dizzy with the fizzy!", MinimumAttendees: 0},
-		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Pool", Description: "Time to shark!", MinimumAttendees: 4},
-		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Quiz", Description: "At the Dux!", MinimumAttendees: 6},
-		{Date: models.EventDate{Date: datatypes.Date(time.Now())}, Name: "Puppy Walk", Description: "Heading to the New Brighton beach, usual place :^)", MinimumAttendees: 0},
-	}
-	for _, e := range events {
-		res := db.Create(&e)
-		err := res.Error
-		if err != nil {
-			log.WithError(err).Panic("could not insert events on startup")
-		}
-	}
+	//// Create
+	//events := []models.Event{
+	//	{Date: models.EventDate{datatypes.Date(time.Now())}, Name: "Beers", Description: "Dizzy with the fizzy!", MinimumAttendees: 0},
+	//	{Date: models.EventDate{datatypes.Date(time.Now())}, Name: "Pool", Description: "Time to shark!", MinimumAttendees: 4},
+	//	{Date: models.EventDate{datatypes.Date(time.Now())}, Name: "Quiz", Description: "At the Dux!", MinimumAttendees: 6},
+	//	{Date: models.EventDate{datatypes.Date(time.Now())}, Name: "Puppy Walk", Description: "Heading to the New Brighton beach, usual place :^)", MinimumAttendees: 0},
+	//}
+	//for _, e := range events {
+	//	res := db.Create(&e)
+	//	err := res.Error
+	//	if err != nil {
+	//		log.WithError(err).Panic("could not insert events on startup")
+	//	}
+	//}
 
 	log.Info("database initialised")
 }
