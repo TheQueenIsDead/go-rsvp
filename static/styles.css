@@ -54,7 +54,7 @@ Grid
     grid-template-columns: auto auto;
     /*background-color: #2196F3;*/
     padding: 3px;
-    width: 100px;
+    width: 500px;
 }
 
 .grid-item {
