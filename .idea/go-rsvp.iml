@@ -8,5 +8,9 @@
     <orderEntry type="library" name="hyperscript.org" level="application" />
     <orderEntry type="library" name="mustache" level="application" />
     <orderEntry type="library" name="bootstrap" level="application" />
+    <orderEntry type="library" name="htmx.org" level="application" />
+    <orderEntry type="library" name="mustache" level="application" />
+    <orderEntry type="library" name="hyperscript.org" level="application" />
+    <orderEntry type="library" name="bootstrap" level="application" />
   </component>
 </module>
