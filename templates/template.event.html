@@ -17,18 +17,22 @@ the event template is rendered server side and defaults to empty strings.
         <tr>
             <td>Id</td>
             <td>Date</td>
+            <td>Time</td>
             <td>Name</td>
             <td>Description</td>
             <td>Minimum Attendees</td>
+            <td>Icon</td>
         </tr>
         </thead>
         <tbody>
         <tr>
             <td>{{event.ID}}</td>
             <td>{{event.Date}}</td>
+            <td>{{event.Time}}</td>
             <td>{{event.Name}}</td>
             <td>{{event.Description}}</td>
             <td>{{event.MinimumAttendees}}</td>
+            <td>{{event.Emoji}}</td>
         </tr>
         </tbody>
     </table>
