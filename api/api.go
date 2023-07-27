@@ -67,12 +67,15 @@ func getEventsHandler(c echo.Context) error {
 	var result []map[string]interface{}
 	for _, e := range events {
 		evt := map[string]interface{}{
-			"date":        e.Date,
 			"name":        e.Name,
 			"description": e.Description,
+			"date":        e.Date.String(),
+			"time":        e.Time.String(),
+			"icon":        e.Emoji,
 			"_links": map[string]interface{}{
 				"self":    fmt.Sprintf("/events/%d", e.ID),
 				"partial": fmt.Sprintf("/partial/events/%d", e.ID),
+				// TODO: Re-evaluate how _templates is actually used (Not currently)
 				"_templates": map[string]interface{}{
 					fmt.Sprintf("/events/%d", e.ID): map[string]interface{}{
 						"title":       "Attend",
