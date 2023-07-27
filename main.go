@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"github.com/cbroglie/mustache"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -51,7 +52,8 @@ func main() {
 	e.Renderer = &Template{}
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		httpError, ok := err.(*echo.HTTPError)
+		var httpError *echo.HTTPError
+		ok := errors.As(err, &httpError)
 		if ok {
 			errorCode := httpError.Code
 			switch errorCode {
