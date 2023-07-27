@@ -12,15 +12,45 @@ var (
 	nilTime = (time.Time{}).UnixNano()
 )
 
-type EventTimestamp time.Time
+type EventDate struct {
+	datatypes.Date
+}
+type EventTime struct {
+	datatypes.Time
+}
 
 type Event struct {
 	gorm.Model
-	Date             datatypes.Date `form:"date"`
-	Time             datatypes.Time `form:"time"`
-	Name             string         `form:"name"`
-	Description      string         `form:"description"`
-	MinimumAttendees int8           `form:"minimumAttendees"`
+	Date             EventDate `form:"date"`
+	Time             EventTime `form:"time"`
+	Name             string    `form:"name"`
+	Description      string    `form:"description"`
+	MinimumAttendees int8      `form:"minimumAttendees"`
+}
+
+func (ed *EventDate) UnmarshalParam(param string) error {
+
+	t, err := time.Parse(`2006-01-02`, param)
+	if err != nil {
+		return err
+	}
+
+	date := datatypes.Date(t)
+
+	ed.Date = date
+	return nil
+}
+func (et *EventTime) UnmarshalParam(param string) error {
+
+	t, err := time.Parse(`15:04`, param)
+	if err != nil {
+		return err
+	}
+
+	tt := datatypes.NewTime(t.Hour(), t.Minute(), t.Second(), t.Nanosecond())
+
+	et.Time = tt
+	return nil
 }
 
 //type EventTime struct {
