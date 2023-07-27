@@ -27,6 +27,11 @@ type EventDate struct {
 	datatypes.Date
 }
 
+func (ed *EventDate) String() string {
+	v, _ := ed.Value()
+	return v.(time.Time).Format(EventDateFormat)
+}
+
 func (ed *EventDate) UnmarshalParam(param string) error {
 
 	t, err := time.Parse(EventDateFormat, param)
@@ -43,6 +48,13 @@ func (ed *EventDate) UnmarshalParam(param string) error {
 // while allowing us to implement post body unmarshalling functionality as part of the echo web framework.
 type EventTime struct {
 	datatypes.Time
+}
+
+func (ed *EventTime) String() string {
+	v, _ := ed.Value()
+	t := v.(string)
+	p, _ := time.Parse("15:04:05", t)
+	return p.Format(EventTimeFormat)
 }
 
 func (et *EventTime) UnmarshalParam(param string) error {
