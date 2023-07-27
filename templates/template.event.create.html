@@ -11,32 +11,46 @@ the event template is rendered server side and defaults to empty strings.
 
 <!--TODO: Add emoji selector to persist with event-->
 <form hx-post="/api/events/new">
-    <section>
-        <div class="grid-container">
-            <!-- Title -->
-            <label class="grid-item" for="name"><span>Name:</span><strong><span aria-label="required">*</span></strong></label>
-            <input class="grid-item" type="text" id="name" name="name" required />
-            <!-- Description -->
-            <label class="grid-item" for="description"><span>Description:</span><strong><span aria-label="required">*</span></strong></label>
-            <input class="grid-item" type="text" id="description" name="description" required />
-<!--            &lt;!&ndash; Date &ndash;&gt;-->
-<!--            <label class="grid-item" for="date" >Date:</label>-->
-<!--            <input class="grid-item" type="datetime-local" id="date" name="date" value="2014-11-16 15:25">-->
-<!--            value="<% date.minimum %>" min="<% date.minimum %>" max="<% date.maximum %>" required>-->
 
-            <!-- Date -->
-            <label class="grid-item" for="date" >Date:</label>
-            <input class="grid-item" type="date" id="date" name="date" value="2018-07-22 15:25">
-            <!-- Time -->
-            <label class="grid-item" for="time" >Time:</label>
-            <input class="grid-item" type="time" id="time" name="time">
+    <!-- Title -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="name"><span>Name:</span><strong><span aria-label="required">*</span></strong></label>
+        <input class="form-control" type="text" id="name" name="name" required />
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="description"><span>Description:</span><strong><span aria-label="required">*</span></strong></label>
+        <input class="form-control" type="text" id="description" name="description" required />
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="date" >Date:</label>
+        <input class="form-control" type="date" id="date" name="date" value="<% today %>" required>
+    </div>
+
+    <!-- Time -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="time" >Time:</label>
+        <input class="form-control" type="time" id="time" name="time">
+    </div>
+
+    <!-- Minimum Attendees -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="minimumAttendees" >Required Attendees:</label>
+        <input class="form-control" type="number" id="minimumAttendees" name="minimumAttendees" value="0">
+    </div>
 
 
 
-            <!-- Minimum Attendees -->
-            <label class="grid-item" for="minimumAttendees" >Required Attendees:</label>
-            <input class="grid-item" type="number" id="minimumAttendees" name="minimumAttendees" value="0">
-        </div>
-    </section>
-    <button type="submit">Create</button>
+<!--            &lt;!&ndash; Emoji Selector &ndash;&gt;-->
+<!--            <div class="btn-group" role="group" aria-label="Basic example">-->
+<!--                <button type="button" class="btn btn-secondary">Left</button>-->
+<!--                <button type="button" class="btn btn-secondary">Middle</button>-->
+<!--                <button type="button" class="btn btn-secondary">Right</button>-->
+<!--            </div>-->
+
+
+    <button type="submit" class="btn btn-primary mb-2">Create</button>
 </form>
