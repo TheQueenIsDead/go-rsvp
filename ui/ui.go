@@ -6,7 +6,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/container"
+	"go-rsvp/models"
 	"net/http"
+	"time"
 )
 
 var (
@@ -70,10 +72,14 @@ func eventsByIdPartial(c echo.Context) error {
 
 // /events/new
 func eventsCreation(c echo.Context) error {
-	return c.Render(200, "templates/template.event.create.html", nil)
+	return c.Render(200, "templates/template.event.create.html", map[string]interface{}{
+		"today": time.Now().Format(models.EventDateFormat),
+	})
 }
 func eventsCreationPartial(c echo.Context) error {
-	output, err := mustache.RenderFile("templates/template.event.create.html")
+	output, err := mustache.RenderFile("templates/template.event.create.html", map[string]interface{}{
+		"today": time.Now().Format(models.EventDateFormat),
+	})
 	if err != nil {
 		log.WithError(err).Error("could not render")
 		return err
