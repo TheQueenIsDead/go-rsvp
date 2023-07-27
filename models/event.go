@@ -50,8 +50,8 @@ type EventTime struct {
 	datatypes.Time
 }
 
-func (ed *EventTime) String() string {
-	v, _ := ed.Value()
+func (et *EventTime) String() string {
+	v, _ := et.Value()
 	t := v.(string)
 	p, _ := time.Parse("15:04:05", t)
 	return p.Format(EventTimeFormat)

@@ -37,14 +37,14 @@ func getClickedHandler(c echo.Context) error {
 
 	result := []map[string]interface{}{
 		{
-			"time":        "exampletime",
+			"time":        "exampleTime",
 			"description": "exampleDescription",
 			"_links": map[string]string{
 				"self": "/events/demoId",
 			},
 		},
 		{
-			"time":        "exampletime2",
+			"time":        "exampleTime2",
 			"description": "exampleDescription2",
 			"_links": map[string]string{
 				"self": "/events/demoId2",
@@ -144,7 +144,7 @@ func createEventAttendance(c echo.Context) error {
 
 	}
 
-	return c.String(200, fmt.Sprintf("All good for %s %s", name, id))
+	return c.String(200, fmt.Sprintf("All good for %s %d", name, id))
 
 }
 
