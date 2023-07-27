@@ -18,6 +18,7 @@ type Event struct {
 	Name             string    `form:"name"`
 	Description      string    `form:"description"`
 	MinimumAttendees int8      `form:"minimumAttendees"`
+	Emoji            string    `form:"emoji"`
 }
 
 // EventDate is a custom type that extends the sql ORM library datatype for database operation compatibility,
