@@ -14,43 +14,50 @@ the event template is rendered server side and defaults to empty strings.
 
     <!-- Title -->
     <div class="form-group">
-        <label class="form-text text-muted" for="name"><span>Name:</span><strong><span aria-label="required">*</span></strong></label>
-        <input class="form-control" type="text" id="name" name="name" required />
+        <label class="form-text text-muted" for="name"><span>Name:</span><strong><span
+                aria-label="required">*</span></strong></label>
+        <input class="form-control" type="text" id="name" name="name" required/>
     </div>
 
     <!-- Description -->
     <div class="form-group">
-        <label class="form-text text-muted" for="description"><span>Description:</span><strong><span aria-label="required">*</span></strong></label>
-        <input class="form-control" type="text" id="description" name="description" required />
+        <label class="form-text text-muted" for="description"><span>Description:</span><strong><span
+                aria-label="required">*</span></strong></label>
+        <input class="form-control" type="text" id="description" name="description" required/>
     </div>
 
     <!-- Date -->
     <div class="form-group">
-        <label class="form-text text-muted" for="date" >Date:</label>
+        <label class="form-text text-muted" for="date">Date:</label>
         <input class="form-control" type="date" id="date" name="date" value="<% today %>" required>
     </div>
 
     <!-- Time -->
     <div class="form-group">
-        <label class="form-text text-muted" for="time" >Time:</label>
+        <label class="form-text text-muted" for="time">Time:</label>
         <input class="form-control" type="time" id="time" name="time">
     </div>
 
     <!-- Minimum Attendees -->
+    <!-- TODO: Validate 0 or more https://htmx.org/examples/inline-validation/ -->
     <div class="form-group">
-        <label class="form-text text-muted" for="minimumAttendees" >Required Attendees:</label>
+        <label class="form-text text-muted" for="minimumAttendees">Required Attendees:</label>
         <input class="form-control" type="number" id="minimumAttendees" name="minimumAttendees" value="0">
     </div>
 
-
-
-<!--            &lt;!&ndash; Emoji Selector &ndash;&gt;-->
-<!--            <div class="btn-group" role="group" aria-label="Basic example">-->
-<!--                <button type="button" class="btn btn-secondary">Left</button>-->
-<!--                <button type="button" class="btn btn-secondary">Middle</button>-->
-<!--                <button type="button" class="btn btn-secondary">Right</button>-->
-<!--            </div>-->
-
+    <!-- Emoji Selector -->
+    <div class="form-group">
+        <label for="emojiSelector" class="form-text text-muted">Event Icon</label>
+        <select multiple class="form-control" name="emoji" id="emojiSelector">
+            <option class="btn btn-light btn-lg">📆</option>
+            <option class="btn btn-light btn-lg">🍺</option>
+            <option class="btn btn-light btn-lg">🎥</option>
+            <option class="btn btn-light btn-lg">🐕</option>
+            <option class="btn btn-light btn-lg">🍲</option>
+            <option class="btn btn-light btn-lg">🏎</option>
+            <option class="btn btn-light btn-lg">👟</option>
+        </select>
+    </div>
 
     <button type="submit" class="btn btn-primary mb-2">Create</button>
 </form>
