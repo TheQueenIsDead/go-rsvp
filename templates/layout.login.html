@@ -1,0 +1,37 @@
+
+
+<h1> Login </h1>
+
+<script src="https://accounts.google.com/gsi/client" async></script>
+
+<!-- Configure with https://developers.google.com/identity/gsi/web/tools/configurator -->
+<div id="g_id_onload"
+     data-client_id="388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com"
+     data-context="use"
+     data-ux_mode="popup"
+     data-callback="loginCB"
+     data-itp_support="true">
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="rectangular"
+     data-theme="outline"
+     data-text="continue_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
+<script>
+
+    function loginCB(evt) {
+        console.log("Logged in!")
+
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: '388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com',
+            scope: 'https://www.googleapis.com/auth/calendar.readonly',
+            prompt: 'consent',
+            callback: '',  // defined at request time in await/promise scope.
+        });
+    }
+
+</script>
