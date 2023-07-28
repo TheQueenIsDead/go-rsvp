@@ -24,6 +24,9 @@ func Init(a container.Application) {
 	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/events") })
 	app.Server.GET("/404", notFound)
 
+	// Auth
+	app.Server.GET("/login", login)
+
 	// Paths
 	app.Server.GET("/events", events)
 	app.Server.GET("/events/:id", eventsById)
@@ -38,6 +41,17 @@ func Init(a container.Application) {
 
 func notFound(c echo.Context) error {
 	return c.Render(200, "templates/template.404.html", nil)
+}
+
+// /login
+// https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
+func login(c echo.Context) error {
+	output, err := mustache.RenderFile("templates/layout.login.html")
+	if err != nil {
+		log.WithError(err).Error("could not render")
+		return err
+	}
+	return c.HTML(200, output)
 }
 
 // /events
