@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-// Process is the middleware function.
 func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 
