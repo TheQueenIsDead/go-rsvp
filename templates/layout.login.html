@@ -1,37 +1,51 @@
+<head>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+</head>
+<body>
+    <h1> Login </h1>
 
+    <!-- Configure with https://developers.google.com/identity/gsi/web/tools/configurator -->
+    <div id="g_id_onload"
+         data-client_id="388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com"
+         data-context="use"
+         data-ux_mode="popup"
+         data-callback="handleCredentialResponse"
+         data-itp_support="true">
+    </div>
 
-<h1> Login </h1>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="continue_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+</body>
 
-<script src="https://accounts.google.com/gsi/client" async></script>
-
-<!-- Configure with https://developers.google.com/identity/gsi/web/tools/configurator -->
-<div id="g_id_onload"
-     data-client_id="388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com"
-     data-context="use"
-     data-ux_mode="popup"
-     data-callback="loginCB"
-     data-itp_support="true">
-</div>
-
-<div class="g_id_signin"
-     data-type="standard"
-     data-shape="rectangular"
-     data-theme="outline"
-     data-text="continue_with"
-     data-size="large"
-     data-logo_alignment="left">
-</div>
 <script>
+    function decodeJwtResponse(credential) {
+        let base64Url = credential.split('.')[1];
+        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        let jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
 
-    function loginCB(evt) {
-        console.log("Logged in!")
+        return JSON.parse(jsonPayload);
+    }
 
-        tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: '388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com',
-            scope: 'https://www.googleapis.com/auth/calendar.readonly',
-            prompt: 'consent',
-            callback: '',  // defined at request time in await/promise scope.
-        });
+    function handleCredentialResponse(response) {
+        // decodeJwtResponse() is a custom function defined by you
+        // to decode the credential response.
+        const responsePayload = decodeJwtResponse(response.credential);
+
+        console.log("ID: " + responsePayload.sub);
+        console.log('Full Name: ' + responsePayload.name);
+        console.log('Given Name: ' + responsePayload.given_name);
+        console.log('Family Name: ' + responsePayload.family_name);
+        console.log("Image URL: " + responsePayload.picture);
+        console.log("Email: " + responsePayload.email);
+
     }
 
 </script>
