@@ -4,10 +4,12 @@ import (
 	"errors"
 	"github.com/cbroglie/mustache"
 	"github.com/labstack/echo/v4"
+	echoLog "github.com/labstack/gommon/log"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/api"
 	"go-rsvp/container"
 	"go-rsvp/database"
+	"go-rsvp/middleware"
 	"go-rsvp/ui"
 	"html/template"
 	"io"
@@ -44,6 +46,9 @@ func main() {
 
 	// Setup Webserver
 	e := echo.New()
+	e.Logger.SetLevel(echoLog.DEBUG)
+
+	e.Use(middleware.CheckCookies)
 
 	// NOTE: https://echo.labstack.com/docs/static-files
 	e.Static("/", "static/")
