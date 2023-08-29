@@ -8,6 +8,11 @@ import (
 	"net/http"
 )
 
+type CookieContext struct {
+	echo.Context
+	UserData map[string]interface{}
+}
+
 func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 
@@ -33,6 +38,11 @@ func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 			log.WithError(err).Error("could not validate google id token")
 			return err
 		}
+
+		// Propagate user information in ctx
+		//cc := CookieContext{Context: c}
+		//cc.UserData = validate.Claims
+		c.Set("userdata", validate.Claims)
 
 		return next(c)
 

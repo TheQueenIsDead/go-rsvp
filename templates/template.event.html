@@ -9,48 +9,81 @@ the event template is rendered server side and defaults to empty strings.
 
 <h1> Event </h1>
 
-<div id="eventContent" hx-ext="client-side-templates" hx-get="/api/events/<% eventId %>" hx-swap="innerHTML" hx-target="#eventContent" mustache-template="event" hx-trigger="load"></div>
+<div id="eventContent" hx-ext="client-side-templates" hx-get="/api/events/<% eventId %>" hx-swap="innerHTML"
+     hx-target="#eventContent" mustache-template="event" hx-trigger="load"></div>
 <template id="event">
 
-    <table>
-        <thead>
-        <tr>
-            <td>Id</td>
-            <td>Date</td>
-            <td>Time</td>
-            <td>Name</td>
-            <td>Description</td>
-            <td>Minimum Attendees</td>
-            <td>Icon</td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>{{event.ID}}</td>
-            <td>{{event.Date}}</td>
-            <td>{{event.Time}}</td>
-            <td>{{event.Name}}</td>
-            <td>{{event.Description}}</td>
-            <td>{{event.MinimumAttendees}}</td>
-            <td>{{event.Emoji}}</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="card">
 
-    <ul>
-        {{#attendees}}
-        <li>{{Name}}</li>
-        {{/attendees}}
-    </ul>
 
-    <span>
-        <label for="attendeeCount">Reservation progress:</label>
-        <meter id="attendeeCount" value="{{attendees.length}}" min="0" max="{{event.MinimumAttendees}}"></meter>
-        <span> {{attendees.length}} </span>
-    </span>
+        <div class="card-header text-center pt-4">
 
-    <br>
-    <br>
+            <h1>{{event.Emoji}}</h1>
+
+            <p class="text-uppercase">
+                <strong>{{event.Name}}</strong>
+            </p>
+
+            <h3 class="mb-4">
+                <strong>{{event.Date}} {{event.Time}}</strong>
+                <small class="text-muted" style="font-size: 16px">/year</small>
+            </h3>
+
+            <h3 class="mb-3">{{event.Name}}</h3>
+            <p class="mb-2">{{event.Description}}</p>
+
+
+            <button type="button" class="btn btn-secondary btn-rounded w-100 mb-3">
+                Attend
+            </button>
+
+        </div>
+        <div class="card-body">
+
+            <ol class="list-unstyled mb-0">
+
+                <ul>
+                    {{#attendees}}
+                    <li class="mb-3">
+                        <i class="fas fa-check text-success me-3"></i>{{Name}}
+                    </li>
+                    {{/attendees}}
+                </ul>
+            </ol>
+        </div>
+
+        <span>
+            <label for="attendeeCount">Reservation progress:</label>
+            <meter id="attendeeCount" value="{{attendees.length}}" min="0" max="{{event.MinimumAttendees}}"></meter>
+            <span> {{attendees.length}} </span>
+        </span>
+    </div>
+
+
+    <!--    <table>-->
+    <!--        <thead>-->
+    <!--        <tr>-->
+    <!--            <td>Id</td>-->
+    <!--            <td>Date</td>-->
+    <!--            <td>Time</td>-->
+    <!--            <td>Name</td>-->
+    <!--            <td>Description</td>-->
+    <!--            <td>Minimum Attendees</td>-->
+    <!--            <td>Icon</td>-->
+    <!--        </tr>-->
+    <!--        </thead>-->
+    <!--        <tbody>-->
+    <!--        <tr>-->
+    <!--            <td>{{event.ID}}</td>-->
+    <!--            <td>{{event.Date}}</td>-->
+    <!--            <td>{{event.Time}}</td>-->
+    <!--            <td>{{event.Name}}</td>-->
+    <!--            <td>{{event.Description}}</td>-->
+    <!--            <td>{{event.MinimumAttendees}}</td>-->
+    <!--            <td>{{event.Emoji}}</td>-->
+    <!--        </tr>-->
+    <!--        </tbody>-->
+    <!--    </table>-->
 
 
     <!-- TODO: Fully change event to bootstrap template for delightful UI-->
@@ -58,19 +91,7 @@ the event template is rendered server side and defaults to empty strings.
     <!-- TODO: Display the event time nicely -->
     <!-- TODO: Add a button to attend and handle the API response better -->
     <!-- TODO: Convert progress to bootstrap component(?) -->
-    <div class="row">
-        <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-<!--                <img src="https://static.vecteezy.com/system/resources/thumbnails/007/306/850/small/beer-glasses-hand-drawn-illustration-cheers-lettering-phrase-cartoon-style-design-for-logo-banner-poster-greeting-cards-web-invitation-to-party-vector.jpg" alt="...">-->
-                <h1>{{event.Emoji}}</h1>
-                <div class="caption">
-                    <h3>{{event.Name}}</h3>
-                    <p>{{event.Description}}</p>
-                    <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
 </template>
 
@@ -79,3 +100,5 @@ the event template is rendered server side and defaults to empty strings.
     <input id="name" name="name" type="text">
     <button type="submit">Attend</button>
 </form>
+
+
