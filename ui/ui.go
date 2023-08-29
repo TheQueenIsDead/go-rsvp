@@ -1,12 +1,15 @@
 package ui
 
 import (
+	"fmt"
 	"github.com/cbroglie/mustache"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
+	"go-rsvp/consts"
 	"go-rsvp/container"
 	"go-rsvp/models"
+	"google.golang.org/api/idtoken"
 	"net/http"
 	"time"
 )
@@ -24,6 +27,9 @@ func Init(a container.Application) {
 	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/events") })
 	app.Server.GET("/404", notFound)
 
+	// Auth
+	app.Server.GET("/login", login)
+
 	// Paths
 	app.Server.GET("/events", events)
 	app.Server.GET("/events/:id", eventsById)
@@ -34,10 +40,47 @@ func Init(a container.Application) {
 	app.Server.GET("/partial/events/:id", eventsByIdPartial)
 	app.Server.GET("/partial/events/new", eventsCreationPartial)
 
+	// Components
+	app.Server.GET("/loginNavItem", loginNavItem)
+
+}
+
+func loginNavItem(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	html := `<li style="float:right"><a class="active" href="/login">Logged out?! Mystery Man!!</a></li>`
+	if cookie, _ := c.Request().Cookie("google"); cookie != nil {
+		validate, err := idtoken.Validate(ctx, cookie.Value, consts.GoogleClientId)
+		if err != nil {
+			return err
+		}
+
+		name := validate.Claims["given_name"]
+		imageUri := validate.Claims["picture"]
+		log.Debug(imageUri)
+		html = fmt.Sprintf(`<li style="float:right">
+					<a class="active" href="/login">
+						<img src="%s" referrerpolicy="no-referrer" class="rounded-circle" style="width: 25px" /> Log out as %s!
+					</a>
+				</li>`, imageUri, name)
+	}
+	return c.HTML(200, html)
 }
 
 func notFound(c echo.Context) error {
 	return c.Render(200, "templates/template.404.html", nil)
+}
+
+// /login
+// https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
+func login(c echo.Context) error {
+	output, err := mustache.RenderFile("templates/layout.login.html")
+	if err != nil {
+		log.WithError(err).Error("could not render")
+		return err
+	}
+	return c.HTML(200, output)
 }
 
 // /events
