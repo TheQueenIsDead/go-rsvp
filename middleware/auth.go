@@ -15,8 +15,6 @@ func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		// TODO: Actually propagate the JWT and verify
-		// https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
 		cookie, err := c.Cookie("google")
 		if err != nil || cookie == nil {
 			_ = c.Redirect(http.StatusTemporaryRedirect, "/login")
