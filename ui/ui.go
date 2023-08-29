@@ -61,7 +61,7 @@ func loginNavItem(c echo.Context) error {
 		log.Debug(imageUri)
 		html = fmt.Sprintf(`<li style="float:right">
 					<a class="active" href="/login">
-						<img src="%s" class="rounded-circle" style="width: 25px"> Log out as %s!
+						<img src="%s" referrerpolicy="no-referrer" class="rounded-circle" style="width: 25px" /> Log out as %s!
 					</a>
 				</li>`, imageUri, name)
 	}
