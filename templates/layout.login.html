@@ -3,15 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <!--suppress SpellCheckingInspection -->
-    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
-    <!--suppress SpellCheckingInspection -->
-    <script src="https://unpkg.com/htmx.org@1.9.3/dist/ext/client-side-templates.js"></script>
-    <!--suppress SpellCheckingInspection -->
-    <script src="https://unpkg.com/mustache@4.2.0"></script>
-    <!--suppress SpellCheckingInspection -->
-    <script src="https://unpkg.com/hyperscript.org@0.9.9"></script>
+    <title>Login</title>
+
+    <script src="https://accounts.google.com/gsi/client" async></script>
+
     <link rel="stylesheet" href="/styles.css">
 
     <!-- Bootstrap-->
@@ -23,42 +18,45 @@
             integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
             crossorigin="anonymous"></script>
 
-    <script src="https://accounts.google.com/gsi/client" async></script>
-
 
 </head>
 
 <body>
-<div id="navbar">
-    <ul>
-        <li _="on click remove .active from <a/> in #navbar then add .active" style="float:right"><a class="active"
-                                                                                                     href="/login">Login</a>
-        </li>
-    </ul>
-</div>
 
-<div class="row col d-flex justify-content-center">
-    <div class="card mx-auto">
+<section class="vh-100">
+    <div class="container-fluid h-custom">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-md-9 col-lg-6 col-xl-5">
+                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                     class="img-fluid" alt="Sample image">
+            </div>
+            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                    <h1>Login to RSVP</h1>
 
-        <p> login </p>
-        <div id="g_id_onload"
-             data-client_id="388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com"
-             data-context="use"
-             data-ux_mode="popup"
-             data-callback="handleCredentialResponse"
-             data-itp_support="true">
-        </div>
+                    <div class="row col d-flex justify-content-center">
 
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="outline"
-             data-text="continue_with"
-             data-size="large"
-             data-logo_alignment="left">
+                        <div id="g_id_onload"
+                             data-client_id="388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com"
+                             data-context="use"
+                             data-ux_mode="popup"
+                             data-callback="handleCredentialResponse"
+                             data-itp_support="true">
+                        </div>
+
+                        <div class="g_id_signin"
+                             data-type="standard"
+                             data-shape="rectangular"
+                             data-theme="outline"
+                             data-text="continue_with"
+                             data-size="large"
+                             data-logo_alignment="left">
+                        </div>
+                    </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
 
 <div id="content">
     <!-- Configure with https://developers.google.com/identity/gsi/web/tools/configurator -->
