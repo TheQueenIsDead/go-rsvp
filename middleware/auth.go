@@ -31,12 +31,12 @@ func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 		validator, err := idtoken.NewValidator(ctx)
 		if err != nil {
 			log.WithError(err).Error("could not create new google token validator")
-			return err
+			return c.Redirect(302, "/login")
 		}
 		validate, err := validator.Validate(ctx, cookie.Value, consts.GoogleClientId)
 		if err != nil || validate == nil {
 			log.WithError(err).Error("could not validate google id token")
-			return err
+			return c.Redirect(302, "/login")
 		}
 
 		// Propagate user information in ctx
