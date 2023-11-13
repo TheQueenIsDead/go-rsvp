@@ -9,6 +9,7 @@ import (
 	"go-rsvp/consts"
 	"go-rsvp/container"
 	"go-rsvp/models"
+	"go-rsvp/templates"
 	"google.golang.org/api/idtoken"
 	"net/http"
 	"time"
@@ -43,6 +44,14 @@ func Init(a container.Application) {
 	// Components
 	app.Server.GET("/loginNavItem", loginNavItem)
 
+	// Testing
+	app.Server.GET("/test", test)
+
+}
+
+func test(c echo.Context) error {
+
+	return templates.Hello("hello").Render(c.Request().Context(), c.Response().Writer)
 }
 
 func loginNavItem(c echo.Context) error {
