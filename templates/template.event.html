@@ -33,7 +33,7 @@ the event template is rendered server side and defaults to empty strings.
             <p class="mb-2">{{event.Description}}</p>
 
 
-            <button type="button" class="btn btn-secondary btn-rounded w-100 mb-3">
+            <button type="button" hx-post="/api/events/<% eventId %>/attend" class="btn btn-secondary btn-rounded w-100 mb-3">
                 Attend
             </button>
 
@@ -95,10 +95,10 @@ the event template is rendered server side and defaults to empty strings.
 
 </template>
 
-<form hx-post="/api/events/<% eventId %>/attend">
-    <label for="name">Name</label>
-    <input id="name" name="name" type="text">
-    <button type="submit">Attend</button>
-</form>
+<!--<form hx-post="/api/events/<% eventId %>/attend">-->
+<!--    <label for="name">Name</label>-->
+<!--    <input id="name" name="name" type="text">-->
+<!--    <button type="submit">Attend</button>-->
+<!--</form>-->
 
 
