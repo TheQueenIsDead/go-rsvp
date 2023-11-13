@@ -129,11 +129,22 @@ func getEventById(c echo.Context) error {
 // Ex. curl -v -X POST http://localhost:3000/events/40/attend -d 'name=billynomates2'
 func createEventAttendance(c echo.Context) error {
 
-	name := c.FormValue("name")
+	userData := c.Get("userdata").(map[string]interface{})
+	name, ok := userData["name"].(string)
+	if !ok {
+		log.Errorf("could not decode name from %v", userData)
+	}
+
+	email, ok := userData["email"].(string)
+	if !ok {
+		log.Errorf("could not decode email from %v", userData)
+	}
+
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	attendee := models.Attendee{
 		Name:    name,
+		Email:   email,
 		EventId: id,
 	}
 
