@@ -39,17 +39,13 @@ the event template is rendered server side and defaults to empty strings.
 
         </div>
         <div class="card-body">
-
-            <ol class="list-unstyled mb-0">
-
-                <ul>
-                    {{#attendees}}
-                    <li class="mb-3">
-                        <i class="fas fa-check text-success me-3"></i>{{Name}}
-                    </li>
-                    {{/attendees}}
-                </ul>
-            </ol>
+            <ul>
+                {{#attendees}}
+                <li class="mb-3">
+                    <i class="fas fa-check text-success me-3"></i>{{Name}}
+                </li>
+                {{/attendees}}
+            </ul>
         </div>
 
         <span>
@@ -59,33 +55,6 @@ the event template is rendered server side and defaults to empty strings.
         </span>
     </div>
 
-
-    <!--    <table>-->
-    <!--        <thead>-->
-    <!--        <tr>-->
-    <!--            <td>Id</td>-->
-    <!--            <td>Date</td>-->
-    <!--            <td>Time</td>-->
-    <!--            <td>Name</td>-->
-    <!--            <td>Description</td>-->
-    <!--            <td>Minimum Attendees</td>-->
-    <!--            <td>Icon</td>-->
-    <!--        </tr>-->
-    <!--        </thead>-->
-    <!--        <tbody>-->
-    <!--        <tr>-->
-    <!--            <td>{{event.ID}}</td>-->
-    <!--            <td>{{event.Date}}</td>-->
-    <!--            <td>{{event.Time}}</td>-->
-    <!--            <td>{{event.Name}}</td>-->
-    <!--            <td>{{event.Description}}</td>-->
-    <!--            <td>{{event.MinimumAttendees}}</td>-->
-    <!--            <td>{{event.Emoji}}</td>-->
-    <!--        </tr>-->
-    <!--        </tbody>-->
-    <!--    </table>-->
-
-
     <!-- TODO: Fully change event to bootstrap template for delightful UI-->
     <!-- TODO: Calculate how many days until the event -->
     <!-- TODO: Display the event time nicely -->
@@ -94,11 +63,5 @@ the event template is rendered server side and defaults to empty strings.
 
 
 </template>
-
-<!--<form hx-post="/api/events/<% eventId %>/attend">-->
-<!--    <label for="name">Name</label>-->
-<!--    <input id="name" name="name" type="text">-->
-<!--    <button type="submit">Attend</button>-->
-<!--</form>-->
 
 
