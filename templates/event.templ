@@ -1,5 +1,85 @@
 package templates
 
+import (
+	"go-rsvp/models"
+)
+
 templ Hello(name string) {
 	<div>Hello, { name }</div>
+}
+
+templ Events(events []models.Event) {
+
+	<h1>Events Template</h1>
+
+	<div hx-ext="client-side-templates">
+		<div class="list-group">
+			<div id="events">
+				for _, event := range events {
+						<h4 class="list-group-item-heading">{event.Name}</h4>
+						<p class="list-group-item-text">{event.Description}</p>
+				//		<p class="list-group-item-text">{event}</p>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ NewEvent() {
+
+<h1> New Event </h1>
+
+<!--TODO: Add emoji selector to persist with event-->
+<form hx-post="/api/events/new">
+
+    <!-- Title -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="name"><span>Name:</span><strong><span
+                aria-label="required">*</span></strong></label>
+        <input class="form-control" type="text" id="name" name="name" required/>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="description"><span>Description:</span><strong><span
+                aria-label="required">*</span></strong></label>
+        <input class="form-control" type="text" id="description" name="description" required/>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="date">Date:</label>
+        //<input class="form-control" type="date" id="date" name="date" value="<% today %>" required/>
+    </div>
+
+    <!-- Time -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="time">Time:</label>
+        <input class="form-control" type="time" id="time" name="time"/>
+    </div>
+
+    <!-- Minimum Attendees -->
+    <!-- TODO: Validate 0 or more https://htmx.org/examples/inline-validation/ -->
+    <div class="form-group">
+        <label class="form-text text-muted" for="minimumAttendees">Required Attendees:</label>
+        <input class="form-control" type="number" id="minimumAttendees" name="minimumAttendees" value="0"/>
+    </div>
+
+    <!-- Emoji Selector -->
+    <div class="form-group">
+        <label for="emojiSelector" class="form-text text-muted">Event Icon</label>
+        <select multiple class="form-control" name="emoji" id="emojiSelector">
+            <option class="btn btn-light btn-lg">📆</option>
+            <option class="btn btn-light btn-lg">🍺</option>
+            <option class="btn btn-light btn-lg">🎥</option>
+            <option class="btn btn-light btn-lg">🐕</option>
+            <option class="btn btn-light btn-lg">🍲</option>
+            <option class="btn btn-light btn-lg">🏎</option>
+            <option class="btn btn-light btn-lg">👟</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-2">Create</button>
+</form>
+
 }

@@ -1,42 +1,42 @@
 package main
 
+//go:generate: templ generate templates/
+
 import (
 	"errors"
-	"github.com/cbroglie/mustache"
-	"github.com/labstack/echo/v4"
-	echoLog "github.com/labstack/gommon/log"
-	log "github.com/sirupsen/logrus"
 	"go-rsvp/api"
 	"go-rsvp/container"
 	"go-rsvp/database"
 	"go-rsvp/middleware"
 	"go-rsvp/ui"
-	"html/template"
-	"io"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	echoLog "github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 )
 
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data interface{}, _ echo.Context) error {
-
-	output, err := mustache.RenderFileInLayout(name, "templates/layout.index.html", data)
-	//output, err := mustache.RenderFile(name, data)
-	if err != nil {
-		log.WithError(err).Error("could not render")
-		return err
-	}
-
-	_, err = w.Write([]byte(output))
-	if err != nil {
-		log.WithError(err).Error("could not write render")
-		return err
-	}
-
-	return nil
-}
+////func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+//func (t *Template) Render(code int, component templ.Component, data interface{} ) error {
+//
+//	c := component{interface}
+//	return c.Render(data)
+//
+//	//output, err := mustache.RenderFileInLayout(name, "templates/layout.index.html", data)
+//	////output, err := mustache.RenderFile(name, data)
+//	//if err != nil {
+//	//	log.WithError(err).Error("could not render")
+//	//	return err
+//	//}
+//	//
+//	//_, err = w.Write([]byte(output))
+//	//if err != nil {
+//	//	log.WithError(err).Error("could not write render")
+//	//	return err
+//	//}
+//
+//	return nil
+//}
 
 func main() {
 
@@ -52,9 +52,6 @@ func main() {
 
 	// NOTE: https://echo.labstack.com/docs/static-files
 	e.Static("/", "static/")
-
-	// NOTE: https://echo.labstack.com/docs/templates
-	e.Renderer = &Template{}
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		var httpError *echo.HTTPError
