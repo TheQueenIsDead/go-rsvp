@@ -2,17 +2,19 @@ package ui
 
 import (
 	"fmt"
-	"github.com/cbroglie/mustache"
-	"github.com/labstack/echo/v4"
-	_ "github.com/mattn/go-sqlite3"
-	log "github.com/sirupsen/logrus"
 	"go-rsvp/consts"
 	"go-rsvp/container"
 	"go-rsvp/models"
 	"go-rsvp/templates"
-	"google.golang.org/api/idtoken"
+	"gorm.io/datatypes"
 	"net/http"
 	"time"
+
+	"github.com/cbroglie/mustache"
+	"github.com/labstack/echo/v4"
+	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
+	"google.golang.org/api/idtoken"
 )
 
 var (
@@ -33,25 +35,42 @@ func Init(a container.Application) {
 
 	// Paths
 	app.Server.GET("/events", events)
-	app.Server.GET("/events/:id", eventsById)
+	//app.Server.GET("/events/:id", eventsById)
 	app.Server.GET("/events/new", eventsCreation)
-
-	// Partial Paths
-	app.Server.GET("/partial/events", eventsPartial)
-	app.Server.GET("/partial/events/:id", eventsByIdPartial)
-	app.Server.GET("/partial/events/new", eventsCreationPartial)
-
-	// Components
-	app.Server.GET("/loginNavItem", loginNavItem)
-
-	// Testing
-	app.Server.GET("/test", test)
+	//
+	//// Partial Paths
+	//app.Server.GET("/partial/events", eventsPartial)
+	//app.Server.GET("/partial/events/:id", eventsByIdPartial)
+	//app.Server.GET("/partial/events/new", eventsCreationPartial)
+	//
+	//// Components
+	//app.Server.GET("/loginNavItem", loginNavItem)
+	//
+	//// Testing
+	//app.Server.GET("/test", test)
 
 }
 
 func test(c echo.Context) error {
 
-	return templates.Hello("hello").Render(c.Request().Context(), c.Response().Writer)
+	//template := templates.Hello("hello")
+	//return template.Render(c.Request().Context(), c.Response().Writer)
+	//
+	log.Debug(c.Request().Header)
+
+	e := templates.Events([]models.Event{
+		{
+			Date:             models.EventDate{Date: datatypes.Date{}},
+			Time:             models.EventTime{},
+			Name:             "",
+			Description:      "",
+			MinimumAttendees: 0,
+			Emoji:            "",
+		},
+	})
+
+	return templates.Index(e).Render(c.Request().Context(), c.Response().Writer)
+
 }
 
 func loginNavItem(c echo.Context) error {
@@ -94,7 +113,28 @@ func login(c echo.Context) error {
 
 // /events
 func events(c echo.Context) error {
-	return c.Render(200, "templates/template.events.html", nil)
+
+	events := []models.Event{
+		{
+			Date:             models.EventDate{Date: datatypes.Date{}},
+			Time:             models.EventTime{},
+			Name:             "Test",
+			Description:      "This is a new renderer",
+			MinimumAttendees: 0,
+			Emoji:            "",
+		},
+	}
+	page := templates.Events(events)
+
+	// Partial
+	if headers, ok := c.Request().Header["Hx-Request"]; ok {
+		if len(headers) == 1 && headers[0] == "true" {
+			return templates.Events(events).Render(c.Request().Context(), c.Response().Writer)
+		}
+	}
+
+	// Full render
+	return templates.Index(page).Render(c.Request().Context(), c.Response().Writer)
 }
 func eventsPartial(c echo.Context) error {
 	output, err := mustache.RenderFile("templates/template.events.html")
@@ -124,9 +164,22 @@ func eventsByIdPartial(c echo.Context) error {
 
 // /events/new
 func eventsCreation(c echo.Context) error {
-	return c.Render(200, "templates/template.event.create.html", map[string]interface{}{
-		"today": time.Now().Format(models.EventDateFormat),
-	})
+
+	component := templates.NewEvent()
+
+	// Partial
+	if headers, ok := c.Request().Header["Hx-Request"]; ok {
+		if len(headers) == 1 && headers[0] == "true" {
+			return component.Render(c.Request().Context(), c.Response().Writer)
+		}
+	}
+
+	// Full render
+	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
+
+	//return c.Render(200, "templates/template.event.create.html", map[string]interface{}{
+	//	"today": time.Now().Format(models.EventDateFormat),
+	//})
 }
 func eventsCreationPartial(c echo.Context) error {
 	output, err := mustache.RenderFile("templates/template.event.create.html", map[string]interface{}{
