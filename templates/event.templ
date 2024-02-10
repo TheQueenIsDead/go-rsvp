@@ -112,7 +112,7 @@ templ Event(event models.Event, attendees []models.Attendee){
             <p class="mb-2">{event.Description}</p>
 
 
-            <button type="button" hx-post="/api/events/{event.Id}/attend" class="btn btn-secondary btn-rounded w-100 mb-3">
+            <button type="button" hx-post={fmt.Sprintf("/api/events/%d/attend", event.ID)} class="btn btn-secondary btn-rounded w-100 mb-3">
                 Attend
             </button>
 
