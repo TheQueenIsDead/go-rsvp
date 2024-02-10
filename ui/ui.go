@@ -96,7 +96,8 @@ func loginNavItem(c echo.Context) error {
 }
 
 func notFound(c echo.Context) error {
-	return c.Render(200, "templates/template.404.html", nil)
+	component := templates.NotFound()
+	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // /login
