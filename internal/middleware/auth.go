@@ -43,6 +43,8 @@ func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 
 		// Propagate user information in ctx
 		c.Set("userdata", validate.Claims)
+		c.Set("userEmail", validate.Claims["email"])
+		c.Set("userName", validate.Claims["name"])
 
 		return next(c)
 

@@ -107,7 +107,15 @@ func EventsById(c echo.Context) error {
 		log.WithError(err).Error("failed to retrieve attendees for event")
 	}
 
-	component := templates.Event(event, attendees)
+	var attending bool
+	for _, attendee := range attendees {
+		userEmail, _ := c.Get("userEmail").(string)
+		if userEmail == attendee.Email {
+			attending = true
+			break
+		}
+	}
+	component := templates.Event(event, attendees, attending)
 
 	// Render the component if the request was initiated by HTMX
 	headers, ok := c.Request().Header["Hx-Request"]

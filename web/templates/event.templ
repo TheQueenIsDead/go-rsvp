@@ -86,14 +86,8 @@ templ NewEvent() {
 
 }
 
-templ Event(event database.Event, attendees []database.Attendee){
+templ Event(event database.Event, attendees []database.Attendee, attending bool){
 <h1> Event </h1>
-
-//<div id="eventContent" hx-ext="client-side-templates" hx-get="/api/events/<% eventId %>" hx-swap="innerHTML"
-//     hx-target="#eventContent" mustache-template="event" hx-trigger="load"></div>
-     
-//<template id="event">
-
     <div class="card">
         <div class="card-header text-center pt-4">
 
@@ -111,24 +105,22 @@ templ Event(event database.Event, attendees []database.Attendee){
             <h3 class="mb-3">{event.Name}</h3>
             <p class="mb-2">{event.Description}</p>
 
-
-            <button type="button" hx-post={fmt.Sprintf("/api/events/%d/attend", event.ID)} class="btn btn-secondary btn-rounded w-100 mb-3">
-                Attend
-            </button>
+            if attending {
+                <button type="button" class="btn btn-secondary btn-rounded w-100 mb-3 disabled" disabled>
+                    Attending!
+                </button>
+            } else {
+                <button type="button" hx-post={fmt.Sprintf("/api/events/%d/attend", event.ID)} class="btn btn-secondary btn-rounded w-100 mb-3">
+                    Attend
+                </button>
+            }
 
         </div>
         <div class="card-body">
             <ul>
               for _, attendee := range attendees {
- //                 <a hx-get={ fmt.Sprintf("/events/%d", event.ID)} hx-trigger="click" hx-target="#content" hx-push-url={ fmt.Sprintf("/events/%d", event.ID)} class="list-group-item">
- //                     <h4 class="list-group-item-heading">{event.Name}</h4>
- //                     //<h5 class="list-group-item-heading">{event.Date} {event.Time}</h5>
- //                     <p class="list-group-item-text">{event.Description}</p>
- //                 </a>
                 <p> {attendee.Name} </p>
               }
-
-
             </ul>
         </div>
 
@@ -144,8 +136,4 @@ templ Event(event database.Event, attendees []database.Attendee){
     <!-- TODO: Display the event time nicely -->
     <!-- TODO: Add a button to attend and handle the API response better -->
     <!-- TODO: Convert progress to bootstrap component(?) -->
-
-
-
-
 }
