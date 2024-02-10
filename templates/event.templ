@@ -2,6 +2,7 @@ package templates
 
 import (
 	"go-rsvp/models"
+	"fmt"
 )
 
 templ Hello(name string) {
@@ -12,17 +13,17 @@ templ Events(events []models.Event) {
 
 	<h1>Events Template</h1>
 
-	<div hx-ext="client-side-templates">
-		<div class="list-group">
-			<div id="events">
-				for _, event := range events {
-						<h4 class="list-group-item-heading">{event.Name}</h4>
-						<p class="list-group-item-text">{event.Description}</p>
-				//		<p class="list-group-item-text">{event}</p>
-				}
-			</div>
-		</div>
-	</div>
+    <div class="list-group">
+        <div id="events">
+            for _, event := range events {
+                <a hx-get={ fmt.Sprintf("/events/%d", event.ID)} hx-trigger="click" hx-target="#content" hx-push-url={ fmt.Sprintf("/events/%d", event.ID)} class="list-group-item">
+                    <h4 class="list-group-item-heading">{event.Name}</h4>
+                    //<h5 class="list-group-item-heading">{event.Date} {event.Time}</h5>
+                    <p class="list-group-item-text">{event.Description}</p>
+                </a>
+            }
+        </div>
+    </div>
 }
 
 templ NewEvent() {
@@ -49,6 +50,7 @@ templ NewEvent() {
     <!-- Date -->
     <div class="form-group">
         <label class="form-text text-muted" for="date">Date:</label>
+        // TODO: Get this working after templ import....
         //<input class="form-control" type="date" id="date" name="date" value="<% today %>" required/>
     </div>
 
@@ -81,5 +83,69 @@ templ NewEvent() {
 
     <button type="submit" class="btn btn-primary mb-2">Create</button>
 </form>
+
+}
+
+templ Event(event models.Event, attendees []models.Attendee){
+<h1> Event </h1>
+
+//<div id="eventContent" hx-ext="client-side-templates" hx-get="/api/events/<% eventId %>" hx-swap="innerHTML"
+//     hx-target="#eventContent" mustache-template="event" hx-trigger="load"></div>
+     
+//<template id="event">
+
+    <div class="card">
+        <div class="card-header text-center pt-4">
+
+            <h1>{event.Emoji}</h1>
+
+            <p class="text-uppercase">
+                <strong>{event.Name}</strong>
+            </p>
+
+            <h3 class="mb-4">
+     //           <strong>{event.Date} {event.Time}</strong>
+                <small class="text-muted" style="font-size: 16px">/year</small>
+            </h3>
+
+            <h3 class="mb-3">{event.Name}</h3>
+            <p class="mb-2">{event.Description}</p>
+
+
+            <button type="button" hx-post="/api/events/{event.Id}/attend" class="btn btn-secondary btn-rounded w-100 mb-3">
+                Attend
+            </button>
+
+        </div>
+        <div class="card-body">
+            <ul>
+              for _, attendee := range attendees {
+ //                 <a hx-get={ fmt.Sprintf("/events/%d", event.ID)} hx-trigger="click" hx-target="#content" hx-push-url={ fmt.Sprintf("/events/%d", event.ID)} class="list-group-item">
+ //                     <h4 class="list-group-item-heading">{event.Name}</h4>
+ //                     //<h5 class="list-group-item-heading">{event.Date} {event.Time}</h5>
+ //                     <p class="list-group-item-text">{event.Description}</p>
+ //                 </a>
+                <p> {attendee.Name} </p>
+              }
+
+
+            </ul>
+        </div>
+
+        <span>
+            <label for="attendeeCount">Reservation progress:</label>
+            <meter id="attendeeCount" value="{attendees.length}" min="0" max="{event.MinimumAttendees}"></meter>
+            <span> {string(len(attendees))} </span>
+        </span>
+    </div>
+
+    <!-- TODO: Fully change event to bootstrap template for delightful UI-->
+    <!-- TODO: Calculate how many days until the event -->
+    <!-- TODO: Display the event time nicely -->
+    <!-- TODO: Add a button to attend and handle the API response better -->
+    <!-- TODO: Convert progress to bootstrap component(?) -->
+
+
+
 
 }
