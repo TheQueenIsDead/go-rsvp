@@ -16,67 +16,12 @@ var (
 func RegisterApiRoutes(e *echo.Echo) {
 	//// API
 	api := e.Group("/api")
-	api.GET("/clicked", GetClickedHandler)
-	//api.GET("/Events", getEventsHandler)
 	api.POST("/events/new", CreateEvent)
-	api.GET("/events/:id", GetEventById)
 	api.POST("/events/:id/attend", CreateEventAttendance)
 }
 
 func RegisterDatabase(d database.Database) {
 	db = d
-}
-
-// GetClickedHandler returns hello world example text in order to fulfill
-// the example clicked endpoint from the HTMX tutorial
-func GetClickedHandler(c echo.Context) error {
-
-	result := []map[string]interface{}{
-		{
-			"time":        "exampleTime",
-			"description": "exampleDescription",
-			"_links": map[string]string{
-				"self": "/Events/demoId",
-			},
-		},
-		{
-			"time":        "exampleTime2",
-			"description": "exampleDescription2",
-			"_links": map[string]string{
-				"self": "/Events/demoId2",
-			},
-		},
-	}
-
-	return c.JSON(http.StatusOK, result)
-
-}
-
-// getEventsHandler returns an event by its ID
-func GetEventById(c echo.Context) error {
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		log.WithError(err).WithField("event_id", c.Param("id")).Error("failed to parse event id")
-	}
-
-	event, err := db.GetEventById(id)
-	if err != nil {
-		log.WithError(err).Error("failed to parse event id")
-	}
-
-	attendees, err := db.GetAttendeesForEvent(event)
-	if err != nil {
-		log.WithError(err).Error("failed to retrieve attendees for event")
-	}
-
-	// TODO: Tidy this up a wee bit.
-	response := map[string]interface{}{
-		"event":     event,
-		"attendees": attendees,
-	}
-
-	return c.JSON(200, response)
 }
 
 // CreateEventAttendance allows us to register people for an event
