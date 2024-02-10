@@ -133,9 +133,9 @@ templ Event(event models.Event, attendees []models.Attendee){
         </div>
 
         <span>
-            <label for="attendeeCount">Reservation progress:</label>
-            <meter id="attendeeCount" value="{attendees.length}" min="0" max="{event.MinimumAttendees}"></meter>
-            <span> {string(len(attendees))} </span>
+            <label for="attendeeCount">Reservation progress: </label>
+            <meter id="attendeeCount" value={fmt.Sprint(len(attendees))} min="0" max={fmt.Sprint(event.MinimumAttendees)}></meter>
+            <span> {fmt.Sprintf("%d / %d", len(attendees), event.MinimumAttendees)} </span>
         </span>
     </div>
 
