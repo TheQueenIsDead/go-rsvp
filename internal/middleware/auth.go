@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	"go-rsvp/consts"
+	"go-rsvp/internal"
 	"google.golang.org/api/idtoken"
 	"net/http"
 	"time"
@@ -29,7 +29,7 @@ func CheckCookies(next echo.HandlerFunc) echo.HandlerFunc {
 			log.WithError(err).Error("could not create new google token validator")
 			return c.Redirect(302, "/login")
 		}
-		validate, err := validator.Validate(ctx, cookie.Value, consts.GoogleClientId)
+		validate, err := validator.Validate(ctx, cookie.Value, internal.GoogleClientId)
 		if err != nil || validate == nil {
 			log.WithError(err).Error("could not validate google id token")
 			// Invalidate cookie

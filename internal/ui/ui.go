@@ -1,39 +1,33 @@
-package main
+package ui
 
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
-	"go-rsvp/consts"
-	"go-rsvp/database"
-	"go-rsvp/models"
-	"go-rsvp/templates"
+	"go-rsvp/internal"
+	"go-rsvp/internal/database"
+	"go-rsvp/web/templates"
 	"google.golang.org/api/idtoken"
-	"gorm.io/datatypes"
+	"net/http"
 	"strconv"
 )
 
-func test(c echo.Context) error {
+var (
+	db database.Database
+)
 
-	//template := templates.Hello("hello")
-	//return template.Render(c.Request().Context(), c.Response().Writer)
-	//
-	log.Debug(c.Request().Header)
+func RegisterUIRoutes(e *echo.Echo) {
+	e.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/Events") })
+	e.GET("/404", NotFound)
+	e.GET("/login", Login)
+	e.GET("/events", Events)
+	e.GET("/events/:id", EventsById)
+	e.GET("/events/new", EventsCreation)
+}
 
-	e := templates.Events([]models.Event{
-		{
-			Date:             models.EventDate{Date: datatypes.Date{}},
-			Time:             models.EventTime{},
-			Name:             "",
-			Description:      "",
-			MinimumAttendees: 0,
-			Emoji:            "",
-		},
-	})
-
-	return templates.Index(e).Render(c.Request().Context(), c.Response().Writer)
-
+func RegisterDatabase(d database.Database) {
+	db = d
 }
 
 func loginNavItem(c echo.Context) error {
@@ -42,7 +36,7 @@ func loginNavItem(c echo.Context) error {
 
 	html := `<li style="float:right"><a class="active" href="/Login">Logged out?! Mystery Man!!</a></li>`
 	if cookie, _ := c.Request().Cookie("google"); cookie != nil {
-		validate, err := idtoken.Validate(ctx, cookie.Value, consts.GoogleClientId)
+		validate, err := idtoken.Validate(ctx, cookie.Value, internal.GoogleClientId)
 		if err != nil {
 			return err
 		}
@@ -78,7 +72,7 @@ func Login(c echo.Context) error {
 // /Events
 func Events(c echo.Context) error {
 
-	el, err := database.GetEvents()
+	el, err := db.GetEvents()
 	if err != nil {
 		log.WithError(err).Error("could not get Events from database")
 	}
@@ -103,12 +97,12 @@ func EventsById(c echo.Context) error {
 		log.WithError(err).WithField("event_id", c.Param("id")).Error("failed to parse event id")
 	}
 
-	event, err := database.GetEventById(id)
+	event, err := db.GetEventById(id)
 	if err != nil {
 		log.WithError(err).Error("failed to parse event id")
 	}
 
-	attendees, err := database.GetAttendeesForEvent(event)
+	attendees, err := db.GetAttendeesForEvent(event)
 	if err != nil {
 		log.WithError(err).Error("failed to retrieve attendees for event")
 	}

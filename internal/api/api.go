@@ -1,14 +1,31 @@
-package main
+package api
 
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	"go-rsvp/database"
-	"go-rsvp/models"
+	"go-rsvp/internal/database"
 	"net/http"
 	"strconv"
 )
+
+var (
+	db database.Database
+)
+
+func RegisterApiRoutes(e *echo.Echo) {
+	//// API
+	api := e.Group("/api")
+	api.GET("/clicked", GetClickedHandler)
+	//api.GET("/Events", getEventsHandler)
+	api.POST("/events/new", CreateEvent)
+	api.GET("/events/:id", GetEventById)
+	api.POST("/events/:id/attend", CreateEventAttendance)
+}
+
+func RegisterDatabase(d database.Database) {
+	db = d
+}
 
 // GetClickedHandler returns hello world example text in order to fulfill
 // the example clicked endpoint from the HTMX tutorial
@@ -43,12 +60,12 @@ func GetEventById(c echo.Context) error {
 		log.WithError(err).WithField("event_id", c.Param("id")).Error("failed to parse event id")
 	}
 
-	event, err := database.GetEventById(id)
+	event, err := db.GetEventById(id)
 	if err != nil {
 		log.WithError(err).Error("failed to parse event id")
 	}
 
-	attendees, err := database.GetAttendeesForEvent(event)
+	attendees, err := db.GetAttendeesForEvent(event)
 	if err != nil {
 		log.WithError(err).Error("failed to retrieve attendees for event")
 	}
@@ -79,13 +96,13 @@ func CreateEventAttendance(c echo.Context) error {
 
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	attendee := models.Attendee{
+	attendee := database.Attendee{
 		Name:    name,
 		Email:   email,
 		EventId: id,
 	}
 
-	res := app.Database.Create(&attendee)
+	res := db.Create(&attendee)
 	err := res.Error
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "could not create attendee")
@@ -98,7 +115,7 @@ func CreateEventAttendance(c echo.Context) error {
 
 func CreateEvent(c echo.Context) error {
 
-	var event models.Event
+	var event database.Event
 	err := c.Bind(&event)
 
 	if err != nil {
@@ -106,7 +123,7 @@ func CreateEvent(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	res := app.Database.Create(&event)
+	res := db.Create(&event)
 	err = res.Error
 	if err != nil {
 		log.WithError(err).Error("could not create event")

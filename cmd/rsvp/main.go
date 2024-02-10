@@ -4,18 +4,16 @@ package main
 
 import (
 	"errors"
-	"go-rsvp/container"
-	"go-rsvp/database"
-	"go-rsvp/middleware"
+	"go-rsvp/internal"
+	"go-rsvp/internal/api"
+	"go-rsvp/internal/database"
+	"go-rsvp/internal/middleware"
+	"go-rsvp/internal/ui"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	echoLog "github.com/labstack/gommon/log"
 	log "github.com/sirupsen/logrus"
-)
-
-var (
-	app container.Application
 )
 
 func main() {
@@ -31,7 +29,7 @@ func main() {
 	e.Use(middleware.CheckCookies)
 
 	// NOTE: https://echo.labstack.com/docs/static-files
-	e.Static("/", "static/")
+	e.Static("/", internal.StaticWebDirectory)
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		var httpError *echo.HTTPError
@@ -51,34 +49,12 @@ func main() {
 		}
 	}
 
-	// Initialise Database
 	db := database.NewDatabase()
-	database.InitialiseDatabase(db)
-
-	// Initialise Routes
-	app = container.Application{
-		Server:   e,
-		Database: db,
-	}
-
-	// Register HTTP routes
-
-	//// API
-	api := app.Server.Group("/api")
-	api.GET("/clicked", GetClickedHandler)
-	//api.GET("/Events", getEventsHandler)
-	api.POST("/events/new", CreateEvent)
-	api.GET("/events/:id", GetEventById)
-	api.POST("/events/:id/attend", CreateEventAttendance)
-
-	//// UI
-	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/Events") })
-	app.Server.GET("/404", NotFound)
-	app.Server.GET("/login", Login)
-	app.Server.GET("/events", Events)
-	app.Server.GET("/events/:id", EventsById)
-	app.Server.GET("/events/new", EventsCreation)
+	api.RegisterApiRoutes(e)
+	api.RegisterDatabase(db)
+	ui.RegisterUIRoutes(e)
+	ui.RegisterDatabase(db)
 
 	// Serve
-	e.Logger.Fatal(app.Server.Start(":3000"))
+	e.Logger.Fatal(e.Start(":3000"))
 }

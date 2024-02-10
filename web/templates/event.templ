@@ -1,7 +1,7 @@
 package templates
 
 import (
-	"go-rsvp/models"
+	"go-rsvp/internal/database"
 	"fmt"
 )
 
@@ -9,7 +9,7 @@ templ Hello(name string) {
 	<div>Hello, { name }</div>
 }
 
-templ Events(events []models.Event) {
+templ Events(events []database.Event) {
 
 	<h1>Events Template</h1>
 
@@ -86,7 +86,7 @@ templ NewEvent() {
 
 }
 
-templ Event(event models.Event, attendees []models.Attendee){
+templ Event(event database.Event, attendees []database.Attendee){
 <h1> Event </h1>
 
 //<div id="eventContent" hx-ext="client-side-templates" hx-get="/api/events/<% eventId %>" hx-swap="innerHTML"
