@@ -104,7 +104,7 @@ templ Event(event models.Event, attendees []models.Attendee){
             </p>
 
             <h3 class="mb-4">
-     //           <strong>{event.Date} {event.Time}</strong>
+                <strong>{event.Date.String()} {event.Time.String()}</strong>
                 <small class="text-muted" style="font-size: 16px">/year</small>
             </h3>
 
