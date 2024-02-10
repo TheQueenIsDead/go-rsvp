@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="go build go-rsvp" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+  <configuration default="false" name="go build go-rsvp/cmd/rsvp" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
     <module name="go-rsvp" />
     <working_directory value="$PROJECT_DIR$" />
     <EXTENSION ID="net.ashald.envfile">
@@ -12,10 +12,12 @@
         <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
       </ENTRIES>
     </EXTENSION>
-    <kind value="DIRECTORY" />
-    <package value="go-rsvp" />
+    <kind value="PACKAGE" />
+    <package value="go-rsvp/cmd/rsvp" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/main.go" />
-    <method v="2" />
+    <method v="2">
+      <option name="GoBeforeRunTask" command="generate" />
+    </method>
   </configuration>
 </component>
