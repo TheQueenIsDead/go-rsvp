@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"github.com/cbroglie/mustache"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
@@ -103,12 +102,12 @@ func notFound(c echo.Context) error {
 // /login
 // https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
 func login(c echo.Context) error {
-	output, err := mustache.RenderFile("templates/layout.login.html")
-	if err != nil {
-		log.WithError(err).Error("could not render")
-		return err
-	}
-	return c.HTML(200, output)
+
+	component := templates.Login()
+
+	// Else full render
+	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
+
 }
 
 // /events
