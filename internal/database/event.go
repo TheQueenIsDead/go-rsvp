@@ -1,6 +1,7 @@
-package models
+package database
 
 import (
+	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"time"
@@ -67,4 +68,24 @@ func (et *EventTime) UnmarshalParam(param string) error {
 	et.Time = datatypes.NewTime(t.Hour(), t.Minute(), t.Second(), t.Nanosecond())
 
 	return nil
+}
+
+func (d *Database) GetEvents() ([]Event, error) {
+	var events []Event
+	result := d.Find(&events)
+	err := result.Error
+	if err != nil {
+		log.WithError(err).Error("database: could not retrieve events")
+	}
+	return events, err
+}
+
+func (d *Database) GetEventById(id int) (Event, error) {
+	var event Event
+	result := d.Find(&event, id)
+	err := result.Error
+	if err != nil {
+		log.WithError(err).WithField("id", id).Error("database: could not retrieve event")
+	}
+	return event, err
 }
