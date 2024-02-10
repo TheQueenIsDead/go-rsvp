@@ -1,53 +1,32 @@
-package api
+package main
 
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-	"go-rsvp/container"
 	"go-rsvp/database"
 	"go-rsvp/models"
 	"net/http"
 	"strconv"
 )
 
-var (
-	app container.Application
-)
-
-// Init registers the application routes with the appropriate handlers,
-// passing in a datastore wrapper for the endpoints to utilise.
-func Init(a container.Application) {
-
-	app = a
-
-	api := app.Server.Group("/api")
-
-	api.GET("/clicked", getClickedHandler)
-	//api.GET("/events", getEventsHandler)
-	api.POST("/events/new", createEvent)
-	api.GET("/events/:id", getEventById)
-	api.POST("/events/:id/attend", createEventAttendance)
-
-}
-
-// getClickedHandler returns hello world example text in order to fulfill
+// GetClickedHandler returns hello world example text in order to fulfill
 // the example clicked endpoint from the HTMX tutorial
-func getClickedHandler(c echo.Context) error {
+func GetClickedHandler(c echo.Context) error {
 
 	result := []map[string]interface{}{
 		{
 			"time":        "exampleTime",
 			"description": "exampleDescription",
 			"_links": map[string]string{
-				"self": "/events/demoId",
+				"self": "/Events/demoId",
 			},
 		},
 		{
 			"time":        "exampleTime2",
 			"description": "exampleDescription2",
 			"_links": map[string]string{
-				"self": "/events/demoId2",
+				"self": "/Events/demoId2",
 			},
 		},
 	}
@@ -57,7 +36,7 @@ func getClickedHandler(c echo.Context) error {
 }
 
 // getEventsHandler returns an event by its ID
-func getEventById(c echo.Context) error {
+func GetEventById(c echo.Context) error {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -83,9 +62,9 @@ func getEventById(c echo.Context) error {
 	return c.JSON(200, response)
 }
 
-// createEventAttendance allows us to register people for an event
+// CreateEventAttendance allows us to register people for an event
 // Ex. curl -v -X POST http://localhost:3000/events/40/attend -d 'name=billynomates2'
-func createEventAttendance(c echo.Context) error {
+func CreateEventAttendance(c echo.Context) error {
 
 	userData := c.Get("userdata").(map[string]interface{})
 	name, ok := userData["name"].(string)
@@ -117,7 +96,7 @@ func createEventAttendance(c echo.Context) error {
 
 }
 
-func createEvent(c echo.Context) error {
+func CreateEvent(c echo.Context) error {
 
 	var event models.Event
 	err := c.Bind(&event)

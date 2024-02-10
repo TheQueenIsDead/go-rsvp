@@ -1,4 +1,4 @@
-package ui
+package main
 
 import (
 	"fmt"
@@ -6,49 +6,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/consts"
-	"go-rsvp/container"
 	"go-rsvp/database"
 	"go-rsvp/models"
 	"go-rsvp/templates"
 	"google.golang.org/api/idtoken"
 	"gorm.io/datatypes"
-	"net/http"
 	"strconv"
 )
-
-var (
-	app container.Application
-)
-
-// Init registers the application UI routes with the appropriate rendering handlers.
-func Init(a container.Application) {
-
-	app = a
-
-	// Top Level Redirect
-	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/events") })
-	app.Server.GET("/404", notFound)
-
-	// Auth
-	app.Server.GET("/login", login)
-
-	// Paths
-	app.Server.GET("/events", events)
-	app.Server.GET("/events/:id", eventsById)
-	app.Server.GET("/events/new", eventsCreation)
-	//
-	//// Partial Paths
-	//app.Server.GET("/partial/events", eventsPartial)
-	//app.Server.GET("/partial/events/:id", eventsByIdPartial)
-	//app.Server.GET("/partial/events/new", eventsCreationPartial)
-	//
-	//// Components
-	//app.Server.GET("/loginNavItem", loginNavItem)
-	//
-	//// Testing
-	//app.Server.GET("/test", test)
-
-}
 
 func test(c echo.Context) error {
 
@@ -76,7 +40,7 @@ func loginNavItem(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	html := `<li style="float:right"><a class="active" href="/login">Logged out?! Mystery Man!!</a></li>`
+	html := `<li style="float:right"><a class="active" href="/Login">Logged out?! Mystery Man!!</a></li>`
 	if cookie, _ := c.Request().Cookie("google"); cookie != nil {
 		validate, err := idtoken.Validate(ctx, cookie.Value, consts.GoogleClientId)
 		if err != nil {
@@ -87,7 +51,7 @@ func loginNavItem(c echo.Context) error {
 		imageUri := validate.Claims["picture"]
 		log.Debug(imageUri)
 		html = fmt.Sprintf(`<li style="float:right">
-					<a class="active" href="/login">
+					<a class="active" href="/Login">
 						<img src="%s" referrerpolicy="no-referrer" class="rounded-circle" style="width: 25px" /> Log out as %s!
 					</a>
 				</li>`, imageUri, name)
@@ -95,14 +59,14 @@ func loginNavItem(c echo.Context) error {
 	return c.HTML(200, html)
 }
 
-func notFound(c echo.Context) error {
+func NotFound(c echo.Context) error {
 	component := templates.NotFound()
 	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
 }
 
-// /login
+// /Login
 // https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid
-func login(c echo.Context) error {
+func Login(c echo.Context) error {
 
 	component := templates.Login()
 
@@ -111,12 +75,12 @@ func login(c echo.Context) error {
 
 }
 
-// /events
-func events(c echo.Context) error {
+// /Events
+func Events(c echo.Context) error {
 
 	el, err := database.GetEvents()
 	if err != nil {
-		log.WithError(err).Error("could not get events from database")
+		log.WithError(err).Error("could not get Events from database")
 	}
 
 	component := templates.Events(el)
@@ -131,8 +95,8 @@ func events(c echo.Context) error {
 	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
 }
 
-// /events/:id
-func eventsById(c echo.Context) error {
+// /Events/:id
+func EventsById(c echo.Context) error {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -162,8 +126,8 @@ func eventsById(c echo.Context) error {
 
 }
 
-// /events/new
-func eventsCreation(c echo.Context) error {
+// /Events/new
+func EventsCreation(c echo.Context) error {
 
 	component := templates.NewEvent()
 

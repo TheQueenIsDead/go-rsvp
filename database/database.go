@@ -24,7 +24,7 @@ func NewDatabase() *gorm.DB {
 	return db
 }
 
-func Init(db *gorm.DB) {
+func InitialiseDatabase(db *gorm.DB) {
 
 	app.Database = db
 
