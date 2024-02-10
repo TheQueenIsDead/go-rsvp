@@ -16,28 +16,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-////func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-//func (t *Template) Render(code int, component templ.Component, data interface{} ) error {
-//
-//	c := component{interface}
-//	return c.Render(data)
-//
-//	//output, err := mustache.RenderFileInLayout(name, "templates/layout.index.html", data)
-//	////output, err := mustache.RenderFile(name, data)
-//	//if err != nil {
-//	//	log.WithError(err).Error("could not render")
-//	//	return err
-//	//}
-//	//
-//	//_, err = w.Write([]byte(output))
-//	//if err != nil {
-//	//	log.WithError(err).Error("could not write render")
-//	//	return err
-//	//}
-//
-//	return nil
-//}
-
 func main() {
 
 	// Setup Logging
