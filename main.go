@@ -1,42 +1,22 @@
 package main
 
+//go:generate: templ generate templates/
+
 import (
 	"errors"
-	"github.com/cbroglie/mustache"
-	"github.com/labstack/echo/v4"
-	echoLog "github.com/labstack/gommon/log"
-	log "github.com/sirupsen/logrus"
-	"go-rsvp/api"
 	"go-rsvp/container"
 	"go-rsvp/database"
 	"go-rsvp/middleware"
-	"go-rsvp/ui"
-	"html/template"
-	"io"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	echoLog "github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 )
 
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data interface{}, _ echo.Context) error {
-
-	output, err := mustache.RenderFileInLayout(name, "templates/layout.index.html", data)
-	//output, err := mustache.RenderFile(name, data)
-	if err != nil {
-		log.WithError(err).Error("could not render")
-		return err
-	}
-
-	_, err = w.Write([]byte(output))
-	if err != nil {
-		log.WithError(err).Error("could not write render")
-		return err
-	}
-
-	return nil
-}
+var (
+	app container.Application
+)
 
 func main() {
 
@@ -52,9 +32,6 @@ func main() {
 
 	// NOTE: https://echo.labstack.com/docs/static-files
 	e.Static("/", "static/")
-
-	// NOTE: https://echo.labstack.com/docs/templates
-	e.Renderer = &Template{}
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		var httpError *echo.HTTPError
@@ -76,15 +53,31 @@ func main() {
 
 	// Initialise Database
 	db := database.NewDatabase()
-	database.Init(db)
+	database.InitialiseDatabase(db)
 
 	// Initialise Routes
-	app := container.Application{
+	app = container.Application{
 		Server:   e,
 		Database: db,
 	}
-	api.Init(app)
-	ui.Init(app)
+
+	// Register HTTP routes
+
+	//// API
+	api := app.Server.Group("/api")
+	api.GET("/clicked", GetClickedHandler)
+	//api.GET("/Events", getEventsHandler)
+	api.POST("/events/new", CreateEvent)
+	api.GET("/events/:id", GetEventById)
+	api.POST("/events/:id/attend", CreateEventAttendance)
+
+	//// UI
+	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/Events") })
+	app.Server.GET("/404", NotFound)
+	app.Server.GET("/login", Login)
+	app.Server.GET("/events", Events)
+	app.Server.GET("/events/:id", EventsById)
+	app.Server.GET("/events/new", EventsCreation)
 
 	// Serve
 	e.Logger.Fatal(app.Server.Start(":3000"))
