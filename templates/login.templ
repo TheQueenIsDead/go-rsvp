@@ -47,20 +47,21 @@ templ Login() {
 
                             <div id="g_id_onload"
                                  data-client_id="388155605343-365c6oqbu3ngjb6ollq16t0jbept3r62.apps.googleusercontent.com"
-                                 data-context="use"
+                                 data-context="signin"
                                  data-ux_mode="popup"
                                  data-callback="handleCredentialResponse"
-                                 data-itp_support="true">
+                                 data-auto_prompt="false">
                             </div>
 
                             <div class="g_id_signin"
                                  data-type="standard"
-                                 data-shape="rectangular"
+                                 data-shape="pill"
                                  data-theme="outline"
                                  data-text="continue_with"
                                  data-size="large"
                                  data-logo_alignment="left">
                             </div>
+
                         </div>
                 </div>
             </div>
@@ -99,7 +100,7 @@ templ Login() {
             console.log("Email: " + responsePayload.email);
 
             const expiry = responsePayload.exp
-            document.cookie = `google=${response.credential};expires=${expiry};`
+            document.cookie = `google=${response.credential};expires=${expiry};SameSite=Strict;Secure`
 
             window.location = "/events"
         }
