@@ -4,16 +4,18 @@ package main
 
 import (
 	"errors"
-	"go-rsvp/api"
 	"go-rsvp/container"
 	"go-rsvp/database"
 	"go-rsvp/middleware"
-	"go-rsvp/ui"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	echoLog "github.com/labstack/gommon/log"
 	log "github.com/sirupsen/logrus"
+)
+
+var (
+	app container.Application
 )
 
 func main() {
@@ -51,15 +53,31 @@ func main() {
 
 	// Initialise Database
 	db := database.NewDatabase()
-	database.Init(db)
+	database.InitialiseDatabase(db)
 
 	// Initialise Routes
-	app := container.Application{
+	app = container.Application{
 		Server:   e,
 		Database: db,
 	}
-	api.Init(app)
-	ui.Init(app)
+
+	// Register HTTP routes
+
+	//// API
+	api := app.Server.Group("/api")
+	api.GET("/clicked", GetClickedHandler)
+	//api.GET("/Events", getEventsHandler)
+	api.POST("/events/new", CreateEvent)
+	api.GET("/events/:id", GetEventById)
+	api.POST("/events/:id/attend", CreateEventAttendance)
+
+	//// UI
+	app.Server.GET("/", func(c echo.Context) error { return c.Redirect(http.StatusPermanentRedirect, "/Events") })
+	app.Server.GET("/404", NotFound)
+	app.Server.GET("/login", Login)
+	app.Server.GET("/events", Events)
+	app.Server.GET("/events/:id", EventsById)
+	app.Server.GET("/events/new", EventsCreation)
 
 	// Serve
 	e.Logger.Fatal(app.Server.Start(":3000"))
