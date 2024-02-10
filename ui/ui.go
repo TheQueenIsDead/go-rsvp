@@ -2,19 +2,19 @@ package ui
 
 import (
 	"fmt"
-	"go-rsvp/consts"
-	"go-rsvp/container"
-	"go-rsvp/models"
-	"go-rsvp/templates"
-	"gorm.io/datatypes"
-	"net/http"
-	"time"
-
 	"github.com/cbroglie/mustache"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
+	"go-rsvp/consts"
+	"go-rsvp/container"
+	"go-rsvp/database"
+	"go-rsvp/models"
+	"go-rsvp/templates"
 	"google.golang.org/api/idtoken"
+	"gorm.io/datatypes"
+	"net/http"
+	"strconv"
 )
 
 var (
@@ -35,7 +35,7 @@ func Init(a container.Application) {
 
 	// Paths
 	app.Server.GET("/events", events)
-	//app.Server.GET("/events/:id", eventsById)
+	app.Server.GET("/events/:id", eventsById)
 	app.Server.GET("/events/new", eventsCreation)
 	//
 	//// Partial Paths
@@ -114,52 +114,52 @@ func login(c echo.Context) error {
 // /events
 func events(c echo.Context) error {
 
-	events := []models.Event{
-		{
-			Date:             models.EventDate{Date: datatypes.Date{}},
-			Time:             models.EventTime{},
-			Name:             "Test",
-			Description:      "This is a new renderer",
-			MinimumAttendees: 0,
-			Emoji:            "",
-		},
-	}
-	page := templates.Events(events)
-
-	// Partial
-	if headers, ok := c.Request().Header["Hx-Request"]; ok {
-		if len(headers) == 1 && headers[0] == "true" {
-			return templates.Events(events).Render(c.Request().Context(), c.Response().Writer)
-		}
-	}
-
-	// Full render
-	return templates.Index(page).Render(c.Request().Context(), c.Response().Writer)
-}
-func eventsPartial(c echo.Context) error {
-	output, err := mustache.RenderFile("templates/template.events.html")
+	el, err := database.GetEvents()
 	if err != nil {
-		log.WithError(err).Error("could not render")
-		return err
+		log.WithError(err).Error("could not get events from database")
 	}
-	return c.HTML(200, output)
+
+	component := templates.Events(el)
+
+	// Render the full page if the request was initiated by HTMX
+	headers, ok := c.Request().Header["Hx-Request"]
+	if ok && len(headers) == 1 && headers[0] == "true" {
+		return component.Render(c.Request().Context(), c.Response().Writer)
+	}
+
+	// Else full render
+	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
 }
 
 // /events/:id
 func eventsById(c echo.Context) error {
-	return c.Render(200, "templates/template.event.html", map[string]interface{}{
-		"eventId": c.Param("id"),
-	})
-}
-func eventsByIdPartial(c echo.Context) error {
-	output, err := mustache.RenderFile("templates/template.event.html", map[string]interface{}{
-		"eventId": c.Param("id"),
-	})
+
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		log.WithError(err).Error("could not render")
-		return err
+		log.WithError(err).WithField("event_id", c.Param("id")).Error("failed to parse event id")
 	}
-	return c.HTML(200, output)
+
+	event, err := database.GetEventById(id)
+	if err != nil {
+		log.WithError(err).Error("failed to parse event id")
+	}
+
+	attendees, err := database.GetAttendeesForEvent(event)
+	if err != nil {
+		log.WithError(err).Error("failed to retrieve attendees for event")
+	}
+
+	component := templates.Event(event, attendees)
+
+	// Render the component if the request was initiated by HTMX
+	headers, ok := c.Request().Header["Hx-Request"]
+	if ok && len(headers) == 1 && headers[0] == "true" {
+		return component.Render(c.Request().Context(), c.Response().Writer)
+	}
+
+	// Else full render
+	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
+
 }
 
 // /events/new
@@ -167,27 +167,12 @@ func eventsCreation(c echo.Context) error {
 
 	component := templates.NewEvent()
 
-	// Partial
-	if headers, ok := c.Request().Header["Hx-Request"]; ok {
-		if len(headers) == 1 && headers[0] == "true" {
-			return component.Render(c.Request().Context(), c.Response().Writer)
-		}
+	// Render the full page if the request was initiated by HTMX
+	headers, ok := c.Request().Header["Hx-Request"]
+	if ok && len(headers) == 1 && headers[0] == "true" {
+		return component.Render(c.Request().Context(), c.Response().Writer)
 	}
 
 	// Full render
 	return templates.Index(component).Render(c.Request().Context(), c.Response().Writer)
-
-	//return c.Render(200, "templates/template.event.create.html", map[string]interface{}{
-	//	"today": time.Now().Format(models.EventDateFormat),
-	//})
-}
-func eventsCreationPartial(c echo.Context) error {
-	output, err := mustache.RenderFile("templates/template.event.create.html", map[string]interface{}{
-		"today": time.Now().Format(models.EventDateFormat),
-	})
-	if err != nil {
-		log.WithError(err).Error("could not render")
-		return err
-	}
-	return c.HTML(200, output)
 }

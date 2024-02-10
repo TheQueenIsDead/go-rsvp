@@ -24,7 +24,7 @@ func Init(a container.Application) {
 	api := app.Server.Group("/api")
 
 	api.GET("/clicked", getClickedHandler)
-	api.GET("/events", getEventsHandler)
+	//api.GET("/events", getEventsHandler)
 	api.POST("/events/new", createEvent)
 	api.GET("/events/:id", getEventById)
 	api.POST("/events/:id/attend", createEventAttendance)
@@ -50,48 +50,6 @@ func getClickedHandler(c echo.Context) error {
 				"self": "/events/demoId2",
 			},
 		},
-	}
-
-	return c.JSON(http.StatusOK, result)
-
-}
-
-// getEventsHandler returns all events in the database
-func getEventsHandler(c echo.Context) error {
-
-	events, err := database.GetEvents()
-	if err != nil {
-		log.WithError(err).Error("api: could not get events from database")
-	}
-
-	var result []map[string]interface{}
-	for _, e := range events {
-		evt := map[string]interface{}{
-			"name":        e.Name,
-			"description": e.Description,
-			"date":        e.Date.String(),
-			"time":        e.Time.String(),
-			"icon":        e.Emoji,
-			"_links": map[string]interface{}{
-				"self":    fmt.Sprintf("/events/%d", e.ID),
-				"partial": fmt.Sprintf("/events/%d", e.ID),
-				// TODO: Re-evaluate how _templates is actually used (Not currently)
-				"_templates": map[string]interface{}{
-					fmt.Sprintf("/events/%d", e.ID): map[string]interface{}{
-						"title":       "Attend",
-						"method":      "POST",
-						"contentType": "application/json",
-						"properties": []map[string]interface{}{
-							{
-								"name":     "name",
-								"required": true,
-							},
-						},
-					},
-				},
-			},
-		}
-		result = append(result, evt)
 	}
 
 	return c.JSON(http.StatusOK, result)
