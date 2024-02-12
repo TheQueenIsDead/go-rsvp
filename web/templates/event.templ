@@ -28,6 +28,9 @@ templ Events(events []database.Event) {
 
 templ NewEvent() {
 
+<div id="new-event" hx-swap="outerHTML" hx-target="this">
+
+
 <h1> New Event </h1>
 
 <!--TODO: Add emoji selector to persist with event-->
@@ -83,6 +86,8 @@ templ NewEvent() {
 
     <button type="submit" class="btn btn-primary mb-2">Create</button>
 </form>
+
+</div>
 
 }
 

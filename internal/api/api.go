@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/internal/database"
+	"go-rsvp/pkg/htmx"
 	"go-rsvp/web/templates"
 	"net/http"
 	"strconv"
@@ -83,6 +85,13 @@ func CreateEvent(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "could not process event")
 	}
 
-	// TODO: Redirect the user to the created event
-	return c.String(http.StatusOK, "OK")
+	// If ok, return an updated version of the event to display to the user
+	attendees, err := db.GetAttendeesForEvent(event)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "could not retrieve event details after registering attendance")
+	}
+	component := templates.Event(event, attendees, false)
+
+	c.Response().Header().Set(htmx.HXPushURL, fmt.Sprintf("/events/%d", event.ID))
+	return component.Render(c.Request().Context(), c.Response().Writer)
 }
