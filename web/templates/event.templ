@@ -87,6 +87,7 @@ templ NewEvent() {
 }
 
 templ Event(event database.Event, attendees []database.Attendee, attending bool){
+<div id="event" hx-swap="outerHTML" hx-target="this">
 <h1> Event </h1>
     <div class="card">
         <div class="card-header text-center pt-4">
@@ -105,15 +106,8 @@ templ Event(event database.Event, attendees []database.Attendee, attending bool)
             <h3 class="mb-3">{event.Name}</h3>
             <p class="mb-2">{event.Description}</p>
 
-            if attending {
-                <button type="button" class="btn btn-secondary btn-rounded w-100 mb-3 disabled" disabled>
-                    Attending!
-                </button>
-            } else {
-                <button type="button" hx-post={fmt.Sprintf("/api/events/%d/attend", event.ID)} class="btn btn-secondary btn-rounded w-100 mb-3">
-                    Attend
-                </button>
-            }
+
+            @AttendEventButton(event, attending)
 
         </div>
         <div class="card-body">
@@ -130,10 +124,23 @@ templ Event(event database.Event, attendees []database.Attendee, attending bool)
             <span> {fmt.Sprintf("%d / %d", len(attendees), event.MinimumAttendees)} </span>
         </span>
     </div>
+</div>
 
     <!-- TODO: Fully change event to bootstrap template for delightful UI-->
     <!-- TODO: Calculate how many days until the event -->
     <!-- TODO: Display the event time nicely -->
     <!-- TODO: Add a button to attend and handle the API response better -->
     <!-- TODO: Convert progress to bootstrap component(?) -->
+}
+
+templ AttendEventButton(event database.Event, attending bool) {
+    if attending {
+        <button type="button" class="btn btn-secondary btn-rounded w-100 mb-3 disabled" disabled>
+            Attending!
+        </button>
+    } else {
+        <button type="button" hx-post={fmt.Sprintf("/api/events/%d/attend", event.ID)} class="btn btn-secondary btn-rounded w-100 mb-3">
+            Attend
+        </button>
+    }
 }

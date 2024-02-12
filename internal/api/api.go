@@ -1,10 +1,10 @@
 package api
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"go-rsvp/internal/database"
+	"go-rsvp/web/templates"
 	"net/http"
 	"strconv"
 )
@@ -47,6 +47,7 @@ func CreateEventAttendance(c echo.Context) error {
 		EventId: id,
 	}
 
+	// Persist event attendance to the database
 	res := db.Create(&attendee)
 	err := res.Error
 	if err != nil {
@@ -54,8 +55,15 @@ func CreateEventAttendance(c echo.Context) error {
 
 	}
 
-	return c.String(200, fmt.Sprintf("All good for %s %d", name, id))
+	// If ok, return an updated version of the event to display to the user
+	event, eErr := db.GetEventById(id)
+	attendees, aErr := db.GetAttendeesForEvent(event)
+	if eErr != nil || aErr != nil {
+		return c.String(http.StatusInternalServerError, "could not retrieve event details after registering attendance")
+	}
+	component := templates.Event(event, attendees, true)
 
+	return component.Render(c.Request().Context(), c.Response().Writer)
 }
 
 func CreateEvent(c echo.Context) error {
@@ -75,5 +83,6 @@ func CreateEvent(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "could not process event")
 	}
 
+	// TODO: Redirect the user to the created event
 	return c.String(http.StatusOK, "OK")
 }
