@@ -3,7 +3,6 @@ module go-rsvp
 go 1.20
 
 require (
-	github.com/a-h/templ v0.2.432
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/labstack/gommon v0.4.0
 	github.com/mattn/go-sqlite3 v1.14.17
@@ -37,6 +36,6 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230807174057-1744710a1577 // indirect
 	google.golang.org/grpc v1.57.1 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gorm.io/driver/mysql v1.5.1 // indirect
 )
